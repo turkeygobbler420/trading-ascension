@@ -156,6 +156,30 @@
   var lastFocus = null;
   
   
+  var PLANS = {
+    'Trading Ascension Course': [
+      ['Full Trading Ascension Model video', 'Every lesson from trading foundations through to full execution, step by step.'],
+      ['H1 bias + M5 execution', 'Set your direction on the H1, then take entries on the M5 only when your rules line up.'],
+      ['Market structure and risk management', 'Read structure, set invalidation first and keep risk fixed on every trade.'],
+      ['Psychology and journaling', 'Build the routine and the journal that keep you calm and consistent.'],
+      ['Live group lectures', 'Learn alongside other students with live sessions and Q&A.'],
+      ['Student portal and Discord access', 'Your Trading Ascension portal plus the student community and support channels.']
+    ],
+    'Scalping Model': [
+      ['Scalping Model video portal', 'Self-paced lessons covering the full Scalping Model.'],
+      ['H1 bias and M5 entry', 'Find direction on the H1 and time your entry on the M5.'],
+      ['BOS / MSS explanation and FVG / IFVG logic', 'What each signal means and exactly when it counts.'],
+      ['Entry, invalidation and stop-loss rules', 'Know where you are wrong before you click.'],
+      ['Entry checklist', 'A simple checklist to confirm every setup before you enter.'],
+      ['General Discord', 'Join the student community and ask questions as you go.']
+    ]
+  };
+  var fillOrder = function (plan) {
+    var key = plan.replace(/ \(.*\)$/, ''), items = PLANS[key] || PLANS['Trading Ascension Course'];
+    document.getElementById('co-items').innerHTML = items.map(function (it) {
+      return '<div class="co-item"><div class="co-it"><b>' + it[0] + '</b><span class="co-inc">Included</span></div><p>' + it[1] + '</p></div>';
+    }).join('');
+  };
   var current = {};
   var resetPay = function () {
     var co = document.getElementById('checkout');
@@ -185,25 +209,26 @@
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var f = form.elements, ok = true;
-    var name = f.name.value.trim(), surname = f.surname.value.trim(), phone = f.phone.value.trim();
-    var digits = phone.replace(/[^\d]/g, '');
-    [[f.name, name.length > 0], [f.surname, surname.length > 0], [f.phone, digits.length >= 9 && digits.length <= 15]].forEach(function (p) {
+    var name = f.name.value.trim(), email = f.email.value.trim(), phone = f.cc.value + ' ' + f.phone.value.trim();
+    var digits = f.phone.value.replace(/[^\d]/g, '');
+    [[f.name, name.length > 1], [f.email, /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)], [f.phone, digits.length >= 6 && digits.length <= 13]].forEach(function (p) {
       p[0].classList.toggle('bad', !p[1]); if (!p[1]) ok = false;
     });
     if (!ok) return;
-    var lead = { name: name, surname: surname, phone: phone, plan: planField.textContent, at: new Date().toISOString() };
+    var lead = { name: name, email: email, phone: phone, plan: planField.textContent, at: new Date().toISOString() };
     try {
       var all = JSON.parse(localStorage.getItem('ta_leads') || '[]'); all.push(lead);
       localStorage.setItem('ta_leads', JSON.stringify(all));
     } catch (_) {}
-    var msg = 'Hi, I’m ' + name + ' ' + surname + ' (' + phone + '). I’d like to join: ' + lead.plan + '.';
+    var msg = 'Hi, I’m ' + name + ' (' + phone + '). I’d like to join: ' + lead.plan + '.';
     document.getElementById('lead-wa').href = 'https://wa.me/27000000000?text=' + encodeURIComponent(msg);
-    document.getElementById('lead-name').textContent = name;
+    document.getElementById('lead-name').textContent = name.split(' ')[0];
     form.hidden = true;
     if (current.amount) {
       // the form fades out and the checkout page transitions in
       var total = 'R' + (current.amount / 100).toLocaleString('en-ZA');
-      document.getElementById('co-plan').textContent = lead.plan.replace(/ \(.*\)$/, '');
+      fillOrder(lead.plan);
+      document.getElementById('co-fn').value = name;
       document.getElementById('co-total').textContent = total;
       payBtn.textContent = 'Pay ' + total;
       modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');

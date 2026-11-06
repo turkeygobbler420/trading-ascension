@@ -3,5 +3,5 @@
 <rect width="48" height="48" rx="12" fill="url(#g)"/>
 <path fill="#fff" d="M7 12h19.5v5.4h-7.2V37h-5.6V17.4H7z"/>
 <path fill="#fff" d="M30.6 12h5.8l7.6 25h-5.6l-1.7-6.2h-7.4L27.6 37H22zM31.8 26.2h5.4L34.5 17z" fill-rule="evenodd"/>
-<path d="M31.6 33.4l2.9-3.2 2.9 3.2" fill="none" stroke="#bef264" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,-5.2)"/>
+<path d="M31.4 30.2h6" fill="none" stroke="#bef264" stroke-width="2.8"/>
 </svg>
