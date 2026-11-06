@@ -465,3 +465,10 @@ h1 .accent{padding-top:.04em!important;padding-bottom:.2em!important;line-height
 h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 
 .plan .btn{margin-top:1.2rem;align-self:flex-start}
+
+/* v29: every CTA identical in size */
+.btn,.hero .btn,.plan .btn,.plan>.btn,.sticky-join .btn{box-sizing:border-box;min-height:3.4rem;padding:.95rem 1.8rem!important;font-size:1.05rem!important;line-height:1.2;display:inline-flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap}
+.plan .btn,.plan>.btn{align-self:stretch!important;width:100%;margin-top:1.4rem!important}
+.cta-row .btn,.sticky-join .btn{min-width:16rem}
+.cta-row .btn,.plan .btn,.plan>.btn,.sticky-join .btn{width:min(18.75rem,100%)!important;min-width:0!important}
+.plan .btn,.plan>.btn{align-self:flex-start!important}
