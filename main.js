@@ -33,7 +33,7 @@
   $$('.proofs').forEach(function (g) {
     Array.prototype.forEach.call(g.children, function (c, i) { c.classList.add('proof-in'); });
   });
-  $$('.faq details,.trust li,.logos .marquee').forEach(function (e, i) { tag(e, 'rise', (i % 5) * 50); });
+  $$('.faq details,.trust li').forEach(function (e, i) { tag(e, 'rise', (i % 5) * 50); });
   $$('.chips').forEach(function (g) {
     Array.prototype.forEach.call(g.children, function (c, i) { tag(c, 'fade', i * 30); });
   });
@@ -244,4 +244,5 @@
       raf = requestAnimationFrame(function () { raf = 0; var r = el.getBoundingClientRect(); el.style.setProperty('--mx', (cx - r.left) + 'px'); el.style.setProperty('--my', (cy - r.top) + 'px'); });
     });
   });
+  $$('.marquee .lg img').forEach(function(i){function f(){var s=document.createElement('span');s.className='lgname';s.textContent=i.getAttribute('data-name');i.replaceWith(s);}i.addEventListener('error',f);if(i.complete&&!i.naturalWidth)f();});
 })();
