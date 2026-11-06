@@ -434,10 +434,10 @@ h1 .accent{padding-top:.04em!important;padding-bottom:.2em!important;line-height
 
 /* v18 logo marquee: seamless, per-logo optical sizing */
 .marquee{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-.marquee .track{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:0;width:max-content;animation:ta-marquee 70s linear infinite;-webkit-animation:ta-marquee 70s linear infinite;will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.marquee .track{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:0;width:max-content;animation:ta-marquee 87.5s linear infinite;-webkit-animation:ta-marquee 87.5s linear infinite;will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .marquee .lg{flex:0 0 auto;display:flex;align-items:center;justify-content:center;height:44px;padding:0 clamp(1.5rem,4.5vw,2.8rem);margin:0}
 .marquee .lg img{display:block;height:calc(var(--h)*1px);width:auto;max-width:none;max-height:none;filter:grayscale(1) opacity(.62);-webkit-user-drag:none;user-select:none}
-@media (max-width:600px){.marquee .lg{height:36px}.marquee .lg img{height:calc(var(--h)*.72px)}.marquee .track{animation-duration:58s}}
+@media (max-width:600px){.marquee .lg{height:36px}.marquee .lg img{height:calc(var(--h)*.72px)}.marquee .track{animation-duration:72.5s}}
 @-webkit-keyframes ta-marquee{to{-webkit-transform:translate3d(-50%,0,0)}}
 @keyframes ta-marquee{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
 @media (prefers-reduced-motion:reduce){.marquee .track{animation:none;width:auto;flex-wrap:wrap;justify-content:center;row-gap:.6rem}.marquee .lg:nth-child(n+9){display:none}}
@@ -472,3 +472,10 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 .cta-row .btn,.sticky-join .btn{min-width:16rem}
 .cta-row .btn,.plan .btn,.plan>.btn,.sticky-join .btn{width:min(18.75rem,100%)!important;min-width:0!important}
 .plan .btn,.plan>.btn{align-self:flex-start!important}
+
+/* v34: two-plan grid, mobile headline sizing */
+@media(min-width:768px){.plans.two{grid-template-columns:repeat(2,1fr)!important}}
+@media(max-width:600px){
+ .hero h1{font-size:1.75rem!important;line-height:1.2!important;font-weight:700!important;letter-spacing:-.02em!important;max-width:none!important}
+ h1 .accent{padding:.02em .4em .12em!important;margin-left:.15em!important}
+}
