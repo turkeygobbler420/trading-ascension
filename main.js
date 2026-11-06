@@ -165,6 +165,11 @@
       ['Live group lectures', 'Learn alongside other students with live sessions and Q&A.'],
       ['Student portal and Discord access', 'Your Trading Ascension portal plus the student community and support channels.']
     ],
+    'Trading Guide': [
+      ['23-page beginner guide', 'A clear, plain-English walkthrough of how to read the market.'],
+      ['Structure and risk basics', 'The foundations of market structure and keeping risk fixed.'],
+      ['Trader\'s checklist', 'A simple checklist to run before every trade.']
+    ],
     'Scalping Model': [
       ['Scalping Model video portal', 'Self-paced lessons covering the full Scalping Model.'],
       ['H1 bias and M5 entry', 'Find direction on the H1 and time your entry on the M5.'],
@@ -179,6 +184,30 @@
     document.getElementById('co-items').innerHTML = items.map(function (it) {
       return '<div class="co-item"><div class="co-it"><b>' + it[0] + '</b><span class="co-inc">Included</span></div><p>' + it[1] + '</p></div>';
     }).join('');
+  };
+  var PRICE = { 'Trading Ascension Course': 149900, 'Scalping Model': 99900, 'Trading Guide': 19900 };
+  var key = function (plan) { return plan.replace(/ \(.*\)$/, ''); };
+  var rand = function (c) { return 'R' + (c / 100).toLocaleString('en-ZA'); };
+  var setPlan = function (plan) {
+    var k = key(plan); if (!PRICE[k]) k = 'Trading Ascension Course';
+    current.plan = k; current.amount = PRICE[k];
+    fillOrder(k);
+    document.getElementById('co-total').textContent = rand(PRICE[k]);
+    payBtn.textContent = 'Pay ' + rand(PRICE[k]);
+    $$('#co-plans .co-plan').forEach(function (b) {
+      var on = b.getAttribute('data-plan') === k;
+      b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+  };
+  var buildPlans = function (start) {
+    var opts = ['Trading Ascension Course', 'Scalping Model'];
+    if (start === 'Trading Guide') opts.push('Trading Guide');
+    document.getElementById('co-plans').innerHTML = opts.map(function (k) {
+      return '<button type="button" class="co-plan" role="radio" data-plan="' + k + '"><i class="dot"></i><span><b>' + k + '</b><small>Once-off payment</small></span><strong>' + rand(PRICE[k]) + '</strong></button>';
+    }).join('');
+    $$('#co-plans .co-plan').forEach(function (b) {
+      b.addEventListener('click', function () { setPlan(b.getAttribute('data-plan')); });
+    });
   };
   var current = {};
   var resetPay = function () {
@@ -226,11 +255,8 @@
     form.hidden = true;
     if (current.amount) {
       // the form fades out and the checkout page transitions in
-      var total = 'R' + (current.amount / 100).toLocaleString('en-ZA');
-      fillOrder(lead.plan);
       document.getElementById('co-fn').value = name;
-      document.getElementById('co-total').textContent = total;
-      payBtn.textContent = 'Pay ' + total;
+      buildPlans(key(lead.plan)); setPlan(lead.plan);
       modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');
       checkout.classList.add('open'); checkout.setAttribute('aria-hidden', 'false');
     } else { done.hidden = false; }
