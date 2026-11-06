@@ -20,7 +20,6 @@
   $$('.fine,.principle,.contact p,footer .wrap > *').forEach(function (e) { tag(e, 'rise'); });
   $$('.pill').forEach(function (e) { tag(e, 'pop', 120); });
   $$('.video').forEach(function (e) { tag(e, 'zoom', 100); });
-  $$('.btn').forEach(function (e) { tag(e, 'pop', 120); });
   $$('.win-card').forEach(function (e) { tag(e, 'rise-big'); });
 
   // grids: each child animates in turn, in its own style
@@ -47,29 +46,43 @@
     li.style.setProperty('--li', (350 + idx * 60) + 'ms');
   });
 
-  var items = $$('.reveal');
-  var timers = new WeakMap();
+  // Reveal once, never re-hide. Re-hiding on leave plus event-only triggers left
+  // cards at opacity 0 (dead space) whenever an observer callback was late or dropped
+  // (fast swipes, address-bar resize, bfcache restore). Now a position sweep is the
+  // source of truth: anything at or above the bottom of the screen is shown.
+  var pending = $$('.reveal');
   var show = function (el) {
     if (el.classList.contains('visible')) return;
     el.classList.add('visible');
-    timers.set(el, setTimeout(function () { el.classList.add('done'); }, 1600));
+    setTimeout(function () { el.classList.add('done'); }, 1200);
   };
-  var hide = function (el) {
-    clearTimeout(timers.get(el));
-    el.classList.remove('visible', 'done');
+  var sweepQueued = false;
+  var sweep = function () {
+    sweepQueued = false;
+    var edge = (window.innerHeight || document.documentElement.clientHeight) - 40;
+    pending = pending.filter(function (el) {
+      if (el.getBoundingClientRect().top < edge) { show(el); return false; }
+      return true;
+    });
   };
+  var queue = function () {
+    if (sweepQueued) return;
+    sweepQueued = true;
+    (window.requestAnimationFrame || setTimeout)(sweep);
+  };
+  ['scroll', 'resize', 'orientationchange', 'pageshow', 'load', 'touchmove', 'touchend', 'focus'].forEach(function (ev) {
+    window.addEventListener(ev, queue, { passive: true });
+  });
+  document.addEventListener('visibilitychange', queue);
+  document.addEventListener('DOMContentLoaded', queue);
+  // safety net: keeps checking while anything is still hidden
+  setInterval(function () { if (pending.length) sweep(); }, 400);
+  sweep();
   if ('IntersectionObserver' in window) {
-    // play when an element comes into view (from either direction)...
     var inObs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) show(e.target); });
-    }, { threshold: 0.15, rootMargin: (window.innerWidth < 768 ? '0px 0px 120px 0px' : '0px 0px -60px') });
-    // ...and rearm once it has fully left the screen, so it replays on the next pass
-    var outObs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (!e.isIntersecting) hide(e.target); });
+      entries.forEach(function (e) { if (e.isIntersecting) { show(e.target); inObs.unobserve(e.target); } });
     }, { threshold: 0 });
-    items.forEach(function (el) { inObs.observe(el); outObs.observe(el); });
-  } else {
-    items.forEach(show);
+    pending.forEach(function (el) { inObs.observe(el); });
   }
 
   // ---------- glyph background (hero) ----------
