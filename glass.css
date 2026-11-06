@@ -613,3 +613,9 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 @media(min-width:768px){:root{--logo-h:2.1rem}}
 .ta-logo,.site-header .brand .ta-logo,.foot-logo,.co-brand .ta-logo{height:var(--logo-h)!important;width:auto!important}
 .ac-ico.ac-portal{width:calc(var(--logo-h)*3.45)!important;flex:0 0 calc(var(--logo-h)*3.45)!important}
+
+/* v58 equal hero spacing: logo / tagline / headline / video */
+.hero{padding-top:4.4rem!important}
+@media(min-width:768px){.hero{padding-top:5.2rem!important}}
+.hero .wrap>.eyebrow:first-child{margin:0 0 1.5rem!important}
+.hero h1{margin:0 0 1.5rem!important}
