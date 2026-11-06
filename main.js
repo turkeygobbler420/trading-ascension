@@ -16,6 +16,7 @@
   $$('.eyebrow').forEach(function (e) { tag(e, 'fade'); });
   $$('h1,h2').forEach(function (e) { tag(e, 'fade', 80); });
   $$('.lead').forEach(function (e) { tag(e, 'rise', 160); });
+  $$('.manifesto p').forEach(function (e, i) { tag(e, 'rise', i * 60); });
   $$('.fine,.principle,.contact p,footer .wrap > *').forEach(function (e) { tag(e, 'rise'); });
   $$('.pill').forEach(function (e) { tag(e, 'pop', 120); });
   $$('.video').forEach(function (e) { tag(e, 'zoom', 100); });
