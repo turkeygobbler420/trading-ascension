@@ -359,3 +359,26 @@ h1 .accent{padding-top:.04em!important;padding-bottom:.2em!important;line-height
 .site-header{position:absolute!important;display:flex!important}
 .site-header.scrolled{background:transparent!important;box-shadow:none!important}
 .hero{padding-top:6rem!important}
+/* ===== landing rewrite ===== */
+.plans.three .card{display:block;text-align:left;padding:1.4rem;height:100%}
+.plans.three .card h3{font-size:1.05rem;margin:0 0 .5rem;color:#0d2216}
+.plans.three .card p{font-size:.92rem;line-height:1.65;color:#4a5f52}
+.plans.three{align-items:stretch}
+.card .num{display:inline-block;font-weight:800;font-size:.85rem;letter-spacing:.08em;color:#16a34a;background:#e8f7ee;border-radius:999px;padding:.2rem .7rem;margin-bottom:.8rem}
+.cta-row{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;margin-top:1.4rem}
+.cta-row .btn{margin-top:0!important}
+.btn.ghost{background:#fff!important;color:#15803d!important;border:1.5px solid #16a34a!important;box-shadow:none!important}
+.trust{list-style:none;margin:1.4rem auto 0;padding:0;display:flex;flex-wrap:wrap;gap:.5rem .6rem;justify-content:center}
+.trust li{background:#fff;border:1px solid #e4ece7;border-radius:999px;padding:.4rem .9rem;font-size:.8rem;color:#1f3a2a;font-weight:600}
+.trust li::before{content:"✓ ";color:#16a34a;font-weight:800}
+.hero .video{margin-top:1.8rem}
+.faq{max-width:44rem;margin:1.8rem auto 0;text-align:left}
+.faq details{background:#fff;border:1px solid #e4ece7;border-radius:14px;margin-bottom:.7rem;box-shadow:0 1px 3px rgba(13,34,22,.06)}
+.faq summary{cursor:pointer;list-style:none;padding:1rem 2.6rem 1rem 1.1rem;font-weight:700;color:#0d2216;position:relative;font-size:.98rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:1.1rem;top:50%;transform:translateY(-50%);color:#16a34a;font-size:1.3rem;font-weight:700}
+.faq details[open] summary::after{content:"–"}
+.faq details p{margin:0;padding:0 1.1rem 1.1rem;color:#4a5f52;font-size:.92rem;line-height:1.65}
+.cta-band .wrap{background:#fff;border:1px solid #e4ece7;border-radius:20px;padding:2.4rem 1.4rem;box-shadow:0 1px 3px rgba(13,34,22,.06)}
+.cta-band a:not(.btn){word-break:break-word}
+.plan s{color:#8a9a90;font-size:.7em;margin-right:.35rem}

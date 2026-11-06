@@ -32,6 +32,7 @@
   $$('.proofs').forEach(function (g) {
     Array.prototype.forEach.call(g.children, function (c, i) { c.classList.add('proof-in'); });
   });
+  $$('.faq details,.trust li').forEach(function (e, i) { tag(e, 'rise', (i % 5) * 50); });
   $$('.chips').forEach(function (g) {
     Array.prototype.forEach.call(g.children, function (c, i) { tag(c, 'fade', i * 30); });
   });
