@@ -602,3 +602,8 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 .plans .plan .access{padding-top:1.1rem}
 .ac-ico.ac-discord{justify-content:center!important}
 .ac-ico.ac-discord{width:2.8rem!important;flex:0 0 2.8rem!important;justify-content:flex-start!important}
+
+/* v56 header logo smaller + spacing below it */
+.site-header .brand .ta-logo{height:1.7rem!important}
+@media(min-width:768px){.site-header .brand .ta-logo{height:2.1rem!important}}
+.hero .wrap>.eyebrow:first-child{margin-top:1.6rem!important}
