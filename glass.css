@@ -607,3 +607,9 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 .site-header .brand .ta-logo{height:1.7rem!important}
 @media(min-width:768px){.site-header .brand .ta-logo{height:2.1rem!important}}
 .hero .wrap>.eyebrow:first-child{margin-top:1.6rem!important}
+
+/* v57 one logo size everywhere */
+:root{--logo-h:1.7rem}
+@media(min-width:768px){:root{--logo-h:2.1rem}}
+.ta-logo,.site-header .brand .ta-logo,.foot-logo,.co-brand .ta-logo{height:var(--logo-h)!important;width:auto!important}
+.ac-ico.ac-portal{width:calc(var(--logo-h)*3.45)!important;flex:0 0 calc(var(--logo-h)*3.45)!important}
