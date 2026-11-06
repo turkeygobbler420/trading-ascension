@@ -382,3 +382,9 @@ h1 .accent{padding-top:.04em!important;padding-bottom:.2em!important;line-height
 .cta-band .wrap{background:#fff;border:1px solid #e4ece7;border-radius:20px;padding:2.4rem 1.4rem;box-shadow:0 1px 3px rgba(13,34,22,.06)}
 .cta-band a:not(.btn){word-break:break-word}
 .plan s{color:#8a9a90;font-size:.7em;margin-right:.35rem}
+
+/* pains */
+.pains{margin-top:1.2rem;margin-bottom:2.2rem}
+.pains .card{text-align:center!important;padding:1.4rem 1rem!important;border-color:#16a34a!important;border-width:1.5px!important}
+.pains .card h3{font-size:1.5rem!important;font-weight:800;line-height:1.15;color:#0d2216;margin:0 0 .4rem!important}
+.pains .card p{font-size:.95rem!important;font-weight:600;color:#15803d!important;margin:0}
