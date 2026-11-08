@@ -182,25 +182,8 @@
   var key = function (plan) { return plan.replace(/ \(.*\)$/, ''); };
   // Whop plan IDs per product. Add the others when you have them.
   var WHOP = { 'Trading Ascension Course': 'plan_zeK5g5GxH1eAb' };
-  var whopCo = null;
-  var mountWhop = function (plan) {
-    var el = document.getElementById('whop-checkout');
-    var id = WHOP[key(plan)];
-    if (whopCo && whopCo.destroy) { try { whopCo.destroy(); } catch (_) {} whopCo = null; }
-    el.innerHTML = '';
-    if (!id) { el.innerHTML = '<p class="co-note">Checkout for this programme is being set up. Email <a href="mailto:hello@tradingascension.co.za">hello@tradingascension.co.za</a> and we will sort your access.</p>'; return; }
-    var tries = 0;
-    (function go() {
-      if (typeof window.WhopElements !== 'function') {
-        if (++tries > 100) { el.innerHTML = '<p class="co-note">Checkout could not load. Please refresh and try again.</p>'; return; }
-        return setTimeout(go, 100);
-      }
-      try {
-        whopCo = window.WhopElements().checkout.create({ plan: id });
-        whopCo.create('checkout').mount('#whop-checkout');
-      } catch (err) { el.innerHTML = '<p class="co-note">Checkout could not load. Please refresh and try again.</p>'; }
-    })();
-  };
+  var whopUrl = function (plan) { var id = WHOP[key(plan)]; return id ? 'https://whop.com/checkout/' + id : ''; };
+  window.addEventListener('pageshow', function (e) { if (e.persisted && modal.classList.contains('open')) closeModal(); });
   var current = {};
   var resetPay = function () {
     var co = document.getElementById('checkout');
@@ -252,24 +235,11 @@
     document.getElementById('lead-wa').href = 'https://wa.me/27000000000?text=' + encodeURIComponent(msg);
     document.getElementById('lead-name').textContent = name.split(' ')[0];
     form.hidden = true;
-    if (current.amount) {
-      // the form fades out and the checkout page transitions in
-      mountWhop(lead.plan);
-      modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');
-      checkout.classList.add('open'); checkout.setAttribute('aria-hidden', 'false');
+    var url = current.amount ? whopUrl(lead.plan) : '';
+    if (url) {
+      // hand the buyer over to Whop's hosted checkout page
+      window.location.href = url;
     } else { done.hidden = false; }
-  });
-
-  // ---------- Whop embedded checkout ----------
-  var checkout = document.getElementById('checkout');
-  var closeCheckout = function (showDone) {
-    checkout.classList.remove('open'); checkout.setAttribute('aria-hidden', 'true');
-    if (whopCo && whopCo.destroy) { try { whopCo.destroy(); } catch (_) {} whopCo = null; }
-    if (showDone) { modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); form.hidden = true; done.hidden = false; }
-    else { document.body.style.overflow = ''; }
-  };
-  document.getElementById('co-back').addEventListener('click', function () {
-    closeCheckout(false); modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); form.hidden = false;
   });
 
   // glass highlight follows the cursor

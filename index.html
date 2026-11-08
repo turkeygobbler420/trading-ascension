@@ -7,7 +7,7 @@
 <meta name="description" content="Trading Ascension — a trading course built around one clear, repeatable strategy: H1 bias, M5 entries, fixed risk.">
 <meta property="og:title" content="Trading Ascension — Trading Course">
 <meta property="og:description" content="One repeatable strategy, step-by-step lessons and live support while you learn.">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="glass.css?v=75"><meta name="theme-color" content="#05030a">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="glass.css?v=76"><meta name="theme-color" content="#05030a">
 </head>
 <body>
 <div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -134,19 +134,6 @@
    <button class="link" type="button" data-close>Close</button>
   </div>
  </div>
-</div><div class="checkout" id="checkout" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Checkout">
- <div class="co-bar"><button type="button" class="co-back" id="co-back">← Back to Step 1</button><span class="co-brand"><img class="ta-logo" src="assets/ta-logo.png" alt="Trading Ascension" width="1249" height="362"></span><span></span></div>
- <div class="co-scroll"><div class="co-wrap">
-  <header class="co-head">
-   <p class="co-step">Step 2 of 2 · Secure checkout</p>
-   <p class="co-lock">🔒 256-bit SSL encryption · Secure checkout</p>
-   <h1>Complete Your Order</h1>
-   <p class="co-sub">Enter your payment details below. Instant access once your payment clears.</p>
-  </header>
-  <div id="whop-checkout" class="whop-mount" aria-live="polite"><p class="co-note">Loading secure checkout…</p></div>
-  <p class="co-pow">Payments powered by <b>Whop</b></p>
-  <p class="co-disc">Trading Ascension is an educational programme. It is not financial advice and we do not guarantee any income or result. Trading involves substantial risk and can result in losses.</p>
- </div></div>
 </div><div class="sticky-join" id="sticky-join" aria-hidden="true">
  <button class="btn submit" type="button" data-goto="programmes" tabindex="-1">Get Instant Access →</button>
 </div>
@@ -156,7 +143,6 @@ var fb=document.querySelector('.final-btn');
 function upd(){var r=fb?fb.getBoundingClientRect():null;var seen=r&&r.top<window.innerHeight&&r.bottom>0;var show=window.scrollY>240&&!seen&&!document.body.classList.contains('modal-open')&&!document.querySelector('.checkout.open')&&!document.querySelector('#lead-modal.open');
 if(show!==on){on=show;s.classList.toggle('show',show);s.setAttribute('aria-hidden',show?'false':'true');s.querySelector('button').tabIndex=show?0:-1;}}
 window.addEventListener('scroll',upd,{passive:true});setInterval(upd,400);})();
-</script><script src="https://cdn.whop.com/elements/amber/elements.js" data-whop-elements async></script>
-<script src="main.js?v=75"></script>
+</script><script src="main.js?v=76"></script>
 </body>
 </html>
