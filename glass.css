@@ -623,3 +623,61 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 /* v59 keep hero text centred on desktop (v58 margin reset removed auto margins) */
 .hero .wrap>.eyebrow:first-child{margin:0 auto 1.5rem!important}
 .hero h1{margin:0 auto 1.5rem!important;text-align:center!important}
+
+/* v60 balanced proof columns + reviews */
+.proof-col{display:contents}
+@media(min-width:768px){
+ .proofs{display:flex!important;justify-content:center;align-items:flex-start;gap:1.6rem!important;max-width:60rem;margin-left:auto;margin-right:auto}
+ .proof-col{display:flex;flex-direction:column;gap:1.6rem;flex:1 1 0;min-width:0}
+ .proof{width:100%!important}
+}
+@media(min-width:1100px){.proofs{display:flex!important;grid-template-columns:none!important}}
+#reviews .wrap{max-width:70rem}
+.rv-grid{display:grid;gap:1rem;margin-top:2rem;text-align:left}
+@media(min-width:700px){.rv-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1050px){.rv-grid{grid-template-columns:repeat(3,1fr);gap:1.25rem}}
+.rv-card{margin:0;display:flex;flex-direction:column;padding:1.4rem;background:#fff;border:1px solid #e4ece7;border-radius:14px;box-shadow:0 1px 3px rgba(13,34,22,.06)}
+.rv-stars{color:#f5b301;letter-spacing:.15em;font-size:1.05rem}
+.rv-card blockquote{margin:.8rem 0 1.2rem;color:#3d5246;line-height:1.6;font-size:.98rem;flex:1}
+.rv-card figcaption{display:flex;align-items:center;gap:.75rem}
+.rv-av{width:2.6rem;height:2.6rem;border-radius:50%;background:linear-gradient(145deg,#16a34a,#064e2b);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.rv-card b{display:block;color:#0d2216}
+.rv-card small{color:#6b7d73}
+.rv-note{margin-top:1.4rem;font-size:.8rem;color:#6b7d73}
+@media(min-width:768px){.proofs{max-width:40rem!important;gap:1.4rem!important}.proof-col{gap:1.4rem}}
+@media(min-width:768px){.proofs{flex-direction:row!important}}
+
+/* v63 prop-firm section */
+#model .lead{max-width:42rem;margin:.9rem auto 0}
+#model .plans.three{margin-top:2rem}
+
+/* v64 prop-firm section redesign */
+#model .wrap.pf{max-width:62rem}
+.pf-vs{display:grid;gap:1rem;margin-top:2rem;text-align:left}
+.pf-col{padding:1.4rem;border-radius:16px;border:1px solid #e4ece7;background:#fff}
+.pf-col h3{margin:0 0 .8rem;font-size:1.05rem;color:#0d2216}
+.pf-col ul{margin:0;padding:0;list-style:none;display:grid;gap:.6rem}
+.pf-col li{position:relative;padding-left:1.6rem;color:#3d5246;line-height:1.5;font-size:.96rem}
+.pf-col li::before{position:absolute;left:0;top:0;font-weight:800}
+.pf-old li::before{content:"\2715";color:#b45454}
+.pf-new{border-color:#16a34a;background:linear-gradient(160deg,#f3fbf6,#fff);box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+.pf-new li::before{content:"\2713";color:#16a34a}
+.pf-sub{margin:2.6rem 0 1.2rem;font-size:1.3rem;color:#0d2216}
+.pf-steps{list-style:none;margin:0;padding:0;display:grid;gap:1rem;text-align:left;counter-reset:none}
+.pf-steps li{position:relative;padding:1.3rem 1.3rem 1.3rem 4.2rem;background:#fff;border:1px solid #e4ece7;border-radius:14px}
+.pf-n{position:absolute;left:1.2rem;top:1.2rem;width:2.2rem;height:2.2rem;border-radius:50%;background:linear-gradient(145deg,#16a34a,#064e2b);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.pf-steps b{display:block;color:#0d2216;margin-bottom:.3rem}
+.pf-steps p{margin:0;color:#3d5246;font-size:.94rem;line-height:1.55}
+.pf-terms{display:grid;gap:.8rem;margin:0;text-align:left}
+.pf-terms>div{padding:1.1rem 1.2rem;background:#ecf7f0;border:1px solid #cfe8d8;border-radius:12px}
+.pf-terms dt{font-weight:700;color:#0e8f4a;margin-bottom:.25rem}
+.pf-terms dd{margin:0;color:#3d5246;font-size:.93rem;line-height:1.5}
+.pf-cta{margin:2.2rem 0 1rem}
+@media(min-width:760px){
+ .pf-vs{grid-template-columns:1fr 1fr}
+ .pf-steps{grid-template-columns:repeat(4,1fr)}
+ .pf-steps li{padding:4.2rem 1.2rem 1.3rem}
+ .pf-n{left:1.2rem;top:1.2rem}
+ .pf-terms{grid-template-columns:repeat(2,1fr)}
+}
+@media(min-width:1050px){.pf-terms{grid-template-columns:repeat(4,1fr)}}
