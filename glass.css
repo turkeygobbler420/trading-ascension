@@ -619,3 +619,7 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 @media(min-width:768px){.hero{padding-top:5.2rem!important}}
 .hero .wrap>.eyebrow:first-child{margin:0 0 1.5rem!important}
 .hero h1{margin:0 0 1.5rem!important}
+
+/* v59 keep hero text centred on desktop (v58 margin reset removed auto margins) */
+.hero .wrap>.eyebrow:first-child{margin:0 auto 1.5rem!important}
+.hero h1{margin:0 auto 1.5rem!important;text-align:center!important}
