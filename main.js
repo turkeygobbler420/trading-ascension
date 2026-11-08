@@ -202,6 +202,7 @@
   var buildPlans = function (start) {
     var opts = ['Trading Ascension Course', 'Scalping Model'];
     if (start === 'Trading Guide') opts.push('Trading Guide');
+    if (!document.getElementById('co-plans')) return;
     document.getElementById('co-plans').innerHTML = opts.map(function (k) {
       return '<button type="button" class="co-plan" role="radio" data-plan="' + k + '"><i class="dot"></i><span><b>' + k + '</b><small>Once-off payment</small></span><strong>' + rand(PRICE[k]) + '</strong></button>';
     }).join('');
@@ -230,6 +231,13 @@
     document.body.style.overflow = '';
     if (lastFocus) lastFocus.focus();
   };
+  $$('[data-goto]').forEach(function (b) {
+    b.addEventListener('click', function (e) {
+      e.preventDefault();
+      var t = document.getElementById(b.getAttribute('data-goto'));
+      if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
   $$('[data-lead]').forEach(function (b) {
     b.addEventListener('click', function (e) { e.preventDefault(); openModal(b.getAttribute('data-lead'), b); });
   });

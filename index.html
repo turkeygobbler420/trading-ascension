@@ -7,7 +7,7 @@
 <meta name="description" content="Trading Ascension — a trading course built around one clear, repeatable strategy: H1 bias, M5 entries, fixed risk.">
 <meta property="og:title" content="Trading Ascension — Trading Course">
 <meta property="og:description" content="One repeatable strategy, step-by-step lessons and live support while you learn.">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="glass.css?v=70"><meta name="theme-color" content="#05030a">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="glass.css?v=74"><meta name="theme-color" content="#05030a">
 </head>
 <body>
 <div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -19,7 +19,7 @@
   <p class="eyebrow">Beginner to full-time trader. No fluff, no BS.</p>
   <h1>Stop Guessing. Start Trading With <span class="accent">Ruthless Precision</span></h1>
   <div class="video">The Trading Ascension Model, explained<small>WATCH THE SHORT VIDEO / 00:25</small></div>
-  <div class="cta-row"><a class="btn" href="#contact" data-lead="Trading Ascension Course" data-amount="149900" data-currency="zar">Get Instant Access →</a></div>
+  <div class="cta-row"><a class="btn" href="#programmes" data-goto="programmes">Get Instant Access →</a></div>
   <p class="fine hero-note">Once-off payment · Instant access · Built for beginners</p>
  </div>
 </section>
@@ -94,11 +94,11 @@
 
 <section class="center contact cta-band" id="contact">
  <div class="wrap final-card">
-  <div class="final-eyebrow">The Trading Ascension Course · R1 499 once-off</div>
+  <div class="final-eyebrow">The Trading Ascension Course</div>
   <h2 class="final-h">30 days from now, your dream life begins.</h2>
   <p class="final-sub">Full course, live lectures and a student community. Instant access, once-off payment.</p>
-  <div class="cta-row"><a class="btn final-btn" href="#contact" data-lead="Trading Ascension Course" data-amount="149900" data-currency="zar">Get Instant Access →</a></div>
-  <p class="final-links"><a href="mailto:hello@tradingascension.co.za">✉ hello@tradingascension.co.za</a></p>
+  <div class="cta-row"><a class="btn final-btn" href="#programmes" data-goto="programmes">Get Instant Access →</a></div>
+  <p class="final-links"><a href="mailto:hello@tradingascension.co.za">hello@tradingascension.co.za</a></p>
  </div>
 </section>
 
@@ -122,7 +122,7 @@
    <p class="sub">You're 60 seconds from joining <b id="lead-plan"></b>. Add your details and we'll set up your student portal and Discord access.</p>
    <label>Full Name<input name="name" type="text" autocomplete="name" placeholder="Your first and last name" required></label>
    <label>Email Address<input name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" required></label>
-   <label>Phone Number<span class="ph"><select name="cc" aria-label="Country code"><option value="+27">ZA +27</option><option value="+267">BW +267</option><option value="+264">NA +264</option><option value="+263">ZW +263</option><option value="+254">KE +254</option><option value="+234">NG +234</option><option value="+44">UK +44</option><option value="+1">US +1</option></select><input name="phone" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="Phone number" required></span></label>
+   <label>WhatsApp Number<span class="ph"><select name="cc" aria-label="Country code"><option value="+27">ZA +27</option><option value="+267">BW +267</option><option value="+264">NA +264</option><option value="+263">ZW +263</option><option value="+254">KE +254</option><option value="+234">NG +234</option><option value="+44">UK +44</option><option value="+1">US +1</option></select><input name="phone" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="WhatsApp number" required></span></label>
    <button class="btn submit" type="submit">Go to Step #2 →</button>
    <p class="fine">🔒 Secure &amp; encrypted. We respect your privacy.<br>We'll only use your details to contact you about your order.</p>
   </form>
@@ -143,8 +143,6 @@
    <h1>Complete Your Order</h1>
    <p class="co-sub">Review what's included, then enter your payment details below.</p>
   </header>
-  <p class="co-label">Choose your plan</p>
-  <div class="co-plans" id="co-plans" role="radiogroup" aria-label="Choose your plan"></div>
   <p class="co-label">Your order summary</p>
   <div class="co-order">
    <div id="co-items"></div>
@@ -183,7 +181,7 @@
   <p class="co-disc">Trading Ascension is an educational programme. It is not financial advice and we do not guarantee any income or result. Trading involves substantial risk and can result in losses.</p>
  </div></div>
 </div><div class="sticky-join" id="sticky-join" aria-hidden="true">
- <button class="btn submit" type="button" data-lead="Trading Ascension Course" data-amount="149900" data-currency="zar" tabindex="-1">Get Instant Access →</button>
+ <button class="btn submit" type="button" data-goto="programmes" tabindex="-1">Get Instant Access →</button>
 </div>
 <script>
 (function(){var s=document.getElementById('sticky-join');var on=false;
@@ -191,6 +189,6 @@ var fb=document.querySelector('.final-btn');
 function upd(){var r=fb?fb.getBoundingClientRect():null;var seen=r&&r.top<window.innerHeight&&r.bottom>0;var show=window.scrollY>240&&!seen&&!document.body.classList.contains('modal-open')&&!document.querySelector('.checkout.open')&&!document.querySelector('#lead-modal.open');
 if(show!==on){on=show;s.classList.toggle('show',show);s.setAttribute('aria-hidden',show?'false':'true');s.querySelector('button').tabIndex=show?0:-1;}}
 window.addEventListener('scroll',upd,{passive:true});setInterval(upd,400);})();
-</script><script src="main.js?v=70"></script>
+</script><script src="main.js?v=74"></script>
 </body>
 </html>

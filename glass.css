@@ -694,3 +694,7 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 
 /* v68 */
 #model .pf .fine{margin-top:2rem}
+
+/* v71 closing card: remove stray bottom gap */
+.final-card .final-eyebrow{display:block!important;width:fit-content;margin:0 auto!important;vertical-align:top}
+.final-card .final-links{margin-bottom:0!important}
