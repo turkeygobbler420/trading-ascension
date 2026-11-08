@@ -181,7 +181,7 @@
   };
   var key = function (plan) { return plan.replace(/ \(.*\)$/, ''); };
   // Whop plan IDs per product. Add the others when you have them.
-  var WHOP = { 'Trading Ascension Course': 'plan_zeK5g5GxH1eAb' };
+  var WHOP = { 'Trading Ascension Course': 'plan_zeK5g5GxH1eAb', 'Scalping Model': 'plan_FqiHg4UQcPmaN' };
   var whopUrl = function (plan) { var id = WHOP[key(plan)]; return id ? 'https://whop.com/checkout/' + id : ''; };
   window.addEventListener('pageshow', function (e) { if (e.persisted && modal.classList.contains('open')) closeModal(); });
   var current = {};
