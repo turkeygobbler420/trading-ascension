@@ -7,7 +7,7 @@
 <meta name="description" content="Trading Ascension — a trading course built around one clear, repeatable strategy: H1 bias, M5 entries, fixed risk.">
 <meta property="og:title" content="Trading Ascension — Trading Course">
 <meta property="og:description" content="One repeatable strategy, step-by-step lessons and live support while you learn.">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="glass.css?v=74"><meta name="theme-color" content="#05030a">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="glass.css?v=75"><meta name="theme-color" content="#05030a">
 </head>
 <body>
 <div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -141,43 +141,10 @@
    <p class="co-step">Step 2 of 2 · Secure checkout</p>
    <p class="co-lock">🔒 256-bit SSL encryption · Secure checkout</p>
    <h1>Complete Your Order</h1>
-   <p class="co-sub">Review what's included, then enter your payment details below.</p>
+   <p class="co-sub">Enter your payment details below. Instant access once your payment clears.</p>
   </header>
-  <p class="co-label">Your order summary</p>
-  <div class="co-order">
-   <div id="co-items"></div>
-   <div class="co-total"><div><b>Order Total</b><small>Once-off · Instant access</small></div><strong id="co-total"></strong></div>
-  </div>
-  <p class="co-label">Payment details</p>
-  <div class="co-box" role="radiogroup" aria-label="Payment methods">
-   <div class="co-m open" data-m="card">
-    <button type="button" class="co-row" role="radio" aria-checked="true"><i class="dot"></i><span class="ico">▭</span>Card</button>
-    <div class="co-body">
-     <label class="co-l">Card information</label>
-     <div class="co-grp"><input id="co-num" inputmode="numeric" placeholder="1234 1234 1234 1234" autocomplete="cc-number"><div class="co-two"><input id="co-exp" inputmode="numeric" placeholder="MM / YY" autocomplete="cc-exp"><input id="co-cvc" inputmode="numeric" placeholder="CVC" autocomplete="cc-csc"></div></div>
-     <label class="co-l">Billing details</label>
-     <div class="co-grp"><input id="co-fn" placeholder="Full name" autocomplete="name"><select id="co-cty"><option>South Africa</option><option>Botswana</option><option>Namibia</option><option>Zimbabwe</option><option>Kenya</option><option>Nigeria</option><option>United Kingdom</option><option>United States</option></select><input id="co-adr" placeholder="Address line 1" autocomplete="address-line1"><div class="co-two"><input placeholder="City" autocomplete="address-level2"><input placeholder="Postal code" autocomplete="postal-code"></div></div>
-    </div>
-   </div>
-   <div class="co-m" data-m="apple"><button type="button" class="co-row" role="radio" aria-checked="false"><i class="dot"></i><span class="badge">Pay</span>Apple Pay</button><div class="co-body"><p class="co-note">You'll confirm with Apple Pay on the next step.</p></div></div>
-   <div class="co-m" data-m="google"><button type="button" class="co-row" role="radio" aria-checked="false"><i class="dot"></i><span class="badge">G Pay</span>Google Pay</button><div class="co-body"><p class="co-note">You'll confirm with Google Pay on the next step.</p></div></div>
-  </div>
-  <button class="btn submit co-pay" type="button" id="co-pay">Pay</button>
-  <button class="link" type="button" id="co-skip">Pay later</button>
-  <p class="co-secure">🔒 Secure checkout · 256-bit SSL encryption</p>
-  <p class="co-terms">By continuing, you agree to the Terms of Service and Privacy Policy.</p>
-  <p class="co-pow">Powered by <b>Whop</b></p>
-  <p class="co-note">Proof of concept: no payment is taken.</p>
-  <section class="co-after">
-   <p class="co-label">After you pay</p>
-   <h2>What Happens After You Pay</h2>
-   <ol>
-    <li><i>1</i><div><b>Your access email arrives right after checkout</b><p>As soon as your order clears, your student portal and Discord invite are on their way to your inbox. Nothing drips, nothing unlocks next week.</p></div></li>
-    <li><i>2</i><div><b>Start with the Model video</b><p>Work through the lessons from the top. Direction first, then entries, then risk, so the whole routine makes sense before you place a trade.</p></div></li>
-    <li><i>3</i><div><b>Join the community</b><p>Introduce yourself in Discord and ask questions as you go. Live lectures and support channels are there while you learn.</p></div></li>
-    <li><i>4</i><div><b>Practise the routine</b><p>Mark your H1 bias, wait for your M5 entry, set your invalidation first and journal every trade. It takes practice, and the lessons show you exactly what to practise.</p></div></li>
-   </ol>
-  </section>
+  <div id="whop-checkout" class="whop-mount" aria-live="polite"><p class="co-note">Loading secure checkout…</p></div>
+  <p class="co-pow">Payments powered by <b>Whop</b></p>
   <p class="co-disc">Trading Ascension is an educational programme. It is not financial advice and we do not guarantee any income or result. Trading involves substantial risk and can result in losses.</p>
  </div></div>
 </div><div class="sticky-join" id="sticky-join" aria-hidden="true">
@@ -189,6 +156,7 @@ var fb=document.querySelector('.final-btn');
 function upd(){var r=fb?fb.getBoundingClientRect():null;var seen=r&&r.top<window.innerHeight&&r.bottom>0;var show=window.scrollY>240&&!seen&&!document.body.classList.contains('modal-open')&&!document.querySelector('.checkout.open')&&!document.querySelector('#lead-modal.open');
 if(show!==on){on=show;s.classList.toggle('show',show);s.setAttribute('aria-hidden',show?'false':'true');s.querySelector('button').tabIndex=show?0:-1;}}
 window.addEventListener('scroll',upd,{passive:true});setInterval(upd,400);})();
-</script><script src="main.js?v=74"></script>
+</script><script src="https://cdn.whop.com/elements/amber/elements.js" data-whop-elements async></script>
+<script src="main.js?v=75"></script>
 </body>
 </html>

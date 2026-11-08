@@ -179,36 +179,27 @@
       ['General Discord', 'Join the student community and ask questions as you go.']
     ]
   };
-  var fillOrder = function (plan) {
-    var key = plan.replace(/ \(.*\)$/, ''), items = PLANS[key] || PLANS['Trading Ascension Course'];
-    document.getElementById('co-items').innerHTML = items.map(function (it) {
-      return '<div class="co-item"><div class="co-it"><b>' + it[0] + '</b><span class="co-inc">Included</span></div><p>' + it[1] + '</p></div>';
-    }).join('');
-  };
-  var PRICE = { 'Trading Ascension Course': 149900, 'Scalping Model': 99900, 'Trading Guide': 19900 };
   var key = function (plan) { return plan.replace(/ \(.*\)$/, ''); };
-  var rand = function (c) { return 'R' + (c / 100).toLocaleString('en-ZA'); };
-  var setPlan = function (plan) {
-    var k = key(plan); if (!PRICE[k]) k = 'Trading Ascension Course';
-    current.plan = k; current.amount = PRICE[k];
-    fillOrder(k);
-    document.getElementById('co-total').textContent = rand(PRICE[k]);
-    payBtn.textContent = 'Pay ' + rand(PRICE[k]);
-    $$('#co-plans .co-plan').forEach(function (b) {
-      var on = b.getAttribute('data-plan') === k;
-      b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false');
-    });
-  };
-  var buildPlans = function (start) {
-    var opts = ['Trading Ascension Course', 'Scalping Model'];
-    if (start === 'Trading Guide') opts.push('Trading Guide');
-    if (!document.getElementById('co-plans')) return;
-    document.getElementById('co-plans').innerHTML = opts.map(function (k) {
-      return '<button type="button" class="co-plan" role="radio" data-plan="' + k + '"><i class="dot"></i><span><b>' + k + '</b><small>Once-off payment</small></span><strong>' + rand(PRICE[k]) + '</strong></button>';
-    }).join('');
-    $$('#co-plans .co-plan').forEach(function (b) {
-      b.addEventListener('click', function () { setPlan(b.getAttribute('data-plan')); });
-    });
+  // Whop plan IDs per product. Add the others when you have them.
+  var WHOP = { 'Trading Ascension Course': 'plan_zeK5g5GxH1eAb' };
+  var whopCo = null;
+  var mountWhop = function (plan) {
+    var el = document.getElementById('whop-checkout');
+    var id = WHOP[key(plan)];
+    if (whopCo && whopCo.destroy) { try { whopCo.destroy(); } catch (_) {} whopCo = null; }
+    el.innerHTML = '';
+    if (!id) { el.innerHTML = '<p class="co-note">Checkout for this programme is being set up. Email <a href="mailto:hello@tradingascension.co.za">hello@tradingascension.co.za</a> and we will sort your access.</p>'; return; }
+    var tries = 0;
+    (function go() {
+      if (typeof window.WhopElements !== 'function') {
+        if (++tries > 100) { el.innerHTML = '<p class="co-note">Checkout could not load. Please refresh and try again.</p>'; return; }
+        return setTimeout(go, 100);
+      }
+      try {
+        whopCo = window.WhopElements().checkout.create({ plan: id });
+        whopCo.create('checkout').mount('#whop-checkout');
+      } catch (err) { el.innerHTML = '<p class="co-note">Checkout could not load. Please refresh and try again.</p>'; }
+    })();
   };
   var current = {};
   var resetPay = function () {
@@ -263,49 +254,22 @@
     form.hidden = true;
     if (current.amount) {
       // the form fades out and the checkout page transitions in
-      document.getElementById('co-fn').value = name;
-      buildPlans(key(lead.plan)); setPlan(lead.plan);
+      mountWhop(lead.plan);
       modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');
       checkout.classList.add('open'); checkout.setAttribute('aria-hidden', 'false');
     } else { done.hidden = false; }
   });
 
-  // ---------- mock checkout (proof of concept) ----------
+  // ---------- Whop embedded checkout ----------
   var checkout = document.getElementById('checkout');
-  var payBtn = document.getElementById('co-pay');
   var closeCheckout = function (showDone) {
     checkout.classList.remove('open'); checkout.setAttribute('aria-hidden', 'true');
+    if (whopCo && whopCo.destroy) { try { whopCo.destroy(); } catch (_) {} whopCo = null; }
     if (showDone) { modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); form.hidden = true; done.hidden = false; }
     else { document.body.style.overflow = ''; }
   };
   document.getElementById('co-back').addEventListener('click', function () {
     closeCheckout(false); modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); form.hidden = false;
-  });
-  document.getElementById('co-skip').addEventListener('click', function () { closeCheckout(true); });
-  $$('.co-m .co-row').forEach(function (r) {
-    r.addEventListener('click', function () {
-      $$('.co-m').forEach(function (m) { m.classList.remove('open'); m.querySelector('.co-row').setAttribute('aria-checked', 'false'); });
-      r.parentNode.classList.add('open'); r.setAttribute('aria-checked', 'true');
-    });
-  });
-  var digits = function (el, max, fmt) {
-    el.addEventListener('input', function () { var v = el.value.replace(/\D/g, '').slice(0, max); el.value = fmt ? fmt(v) : v; });
-  };
-  digits(document.getElementById('co-num'), 16, function (v) { return v.replace(/(.{4})/g, '$1 ').trim(); });
-  digits(document.getElementById('co-exp'), 4, function (v) { return v.length > 2 ? v.slice(0, 2) + ' / ' + v.slice(2) : v; });
-  digits(document.getElementById('co-cvc'), 4);
-  payBtn.addEventListener('click', function () {
-    var card = document.querySelector('.co-m.open').getAttribute('data-m') === 'card';
-    if (card) {
-      var chk = [['co-num', 16], ['co-exp', 4], ['co-cvc', 3], ['co-fn', 0]], ok = true;
-      chk.forEach(function (p) {
-        var el = document.getElementById(p[0]), good = p[1] ? el.value.replace(/\D/g, '').length >= p[1] : el.value.trim().length > 0;
-        el.classList.toggle('bad', !good); if (!good) ok = false;
-      });
-      if (!ok) return;
-    }
-    var t = payBtn.textContent; payBtn.textContent = 'Processing…'; payBtn.disabled = true;
-    setTimeout(function () { payBtn.textContent = t; payBtn.disabled = false; closeCheckout(true); }, 1200);
   });
 
   // glass highlight follows the cursor
