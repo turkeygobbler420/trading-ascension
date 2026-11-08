@@ -681,3 +681,16 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
  .pf-terms{grid-template-columns:repeat(2,1fr)}
 }
 @media(min-width:1050px){.pf-terms{grid-template-columns:repeat(4,1fr)}}
+
+/* v65: faq long answer spacing */
+.faq details p{line-height:1.6}
+
+/* v67 shorter closing CTA */
+.final-card{padding-top:2rem!important;padding-bottom:2rem!important}
+.final-card .final-h{margin:.8rem 0 .6rem!important}
+.final-card .final-sub{margin:0 auto 1.2rem!important}
+.final-card .final-links{margin-top:.9rem!important}
+#contact.cta-band{padding-top:2rem!important;padding-bottom:2rem!important}
+
+/* v68 */
+#model .pf .fine{margin-top:2rem}
