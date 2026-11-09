@@ -217,6 +217,19 @@
   });
   $$('[data-close]').forEach(function (b) { b.addEventListener('click', closeModal); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+  // ---------- save leads to Supabase (table: public.leads, insert-only) ----------
+  var SUPABASE_URL = 'https://fbitbdhcimuiupptrwev.supabase.co';   // e.g. https://xxxx.supabase.co
+  var SUPABASE_KEY = 'sb_publishable_90Vx7O7LI-JQVPZ6Zls43w_QLcfmvix';   // the public "anon" key (safe in the browser, RLS allows insert only)
+  var saveLead = function (row) {
+    if (!SUPABASE_URL || !SUPABASE_KEY) return Promise.resolve();
+    var req = fetch(SUPABASE_URL + '/rest/v1/leads', {
+      method: 'POST', keepalive: true,
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY, Prefer: 'return=minimal' },
+      body: JSON.stringify(row)
+    }).catch(function () {});
+    // never keep the buyer waiting more than 2 seconds
+    return Promise.race([req, new Promise(function (res) { setTimeout(res, 2000); })]);
+  };
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var f = form.elements, ok = true;
@@ -236,9 +249,13 @@
     document.getElementById('lead-name').textContent = name.split(' ')[0];
     form.hidden = true;
     var url = current.amount ? whopUrl(lead.plan) : '';
+    var saved = saveLead({
+      name: name, email: email, country_code: f.cc.value, whatsapp: phone, plan: lead.plan,
+      amount_zar: current.amount ? current.amount / 100 : null, page_url: location.href, status: url ? 'checkout_started' : 'new'
+    });
     if (url) {
-      // hand the buyer over to Whop's hosted checkout page
-      window.location.href = url;
+      // save the lead, then hand the buyer over to Whop's hosted checkout page
+      saved.then(function () { window.location.href = url; });
     } else { done.hidden = false; }
   });
 
