@@ -188,7 +188,17 @@
     document.body.style.overflow = '';
     if (e.persisted && modal.classList.contains('open')) closeModal();
   });
+  var EMBED = false;   // true = take payment inside the popup (Whop embedded checkout)
   var current = {};
+  var loadWhop = function () {
+    return new Promise(function (res, rej) {
+      if (window.WhopElements) return res();
+      var sc = document.createElement('script');
+      sc.src = 'https://cdn.whop.com/elements/amber/elements.js'; sc.setAttribute('data-whop-elements', '');
+      sc.onload = function () { window.WhopElements ? res() : rej(); }; sc.onerror = rej;
+      document.head.appendChild(sc);
+    });
+  };
   var resetPay = function () {
     var co = document.getElementById('checkout');
     if (co) { co.classList.remove('open'); co.setAttribute('aria-hidden', 'true'); }
@@ -199,6 +209,7 @@
     planField.textContent = plan;
     resetPay();
     form.hidden = false; done.hidden = true; form.reset();
+    var lp = document.getElementById('lead-pay'); if (lp) { lp.hidden = true; lp.innerHTML = ''; }
     modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     setTimeout(function () { form.elements.name.focus(); }, 60);
@@ -252,13 +263,24 @@
     document.getElementById('lead-wa').href = 'https://wa.me/27000000000?text=' + encodeURIComponent(msg);
     document.getElementById('lead-name').textContent = name.split(' ')[0];
     var url = current.amount ? whopUrl(lead.plan) : '';
+    // lead_ref ties this exact form submission to the Whop payment (sent to Whop as checkout metadata)
+    var ref = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
     var saved = saveLead({
-      name: name, email: email, country_code: f.cc.value, whatsapp: phone, plan: lead.plan,
+      name: name, email: email, country_code: f.cc.value, whatsapp: phone, plan: lead.plan, lead_ref: ref,
       amount_zar: current.amount ? current.amount / 100 : null, page_url: location.href, status: url ? 'checkout_started' : 'new'
     });
-    if (url) {
-      // save the lead, then hand the buyer over to Whop's hosted checkout page
-      // no leftover box: close the form and show a plain full-screen loader until Whop opens
+    // TikTok Pixel: lead submitted (and checkout begun when the plan has a payment link). Never blocks the flow.
+    try {
+      if (window.ttq) {
+        var tt = { content_name: lead.plan, content_type: 'product', currency: 'ZAR', value: current.amount ? current.amount / 100 : 0 };
+        ttq.track('SubmitForm', tt);
+        ttq.track('Lead', tt);
+        if (url) ttq.track('InitiateCheckout', tt);
+      }
+    } catch (_) {}
+    if (url && !EMBED) {
+      // Hosted Whop checkout, with the buyer's email/name pre-filled so the payment matches this lead
+      var go = url + '?email=' + encodeURIComponent(email) + '&name=' + encodeURIComponent(name);
       modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');
       var wait = document.createElement('div');
       wait.id = 'go-whop';
@@ -266,7 +288,25 @@
       wait.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font:600 15px Inter,system-ui,sans-serif;color:#334155';
       wait.innerHTML = '<div style="width:34px;height:34px;border:3px solid #d1fae5;border-top-color:#16a34a;border-radius:50%;animation:gospin .8s linear infinite"></div><div>Opening secure checkout…</div><style>@keyframes gospin{to{transform:rotate(360deg)}}</style>';
       document.body.appendChild(wait);
-      saved.then(function () { window.location.href = url; });
+      saved.then(function () { window.location.href = go; });
+    } else if (url) {
+      // Step 2 happens inside this same popup (Whop embedded checkout), so the payment carries our lead_ref
+      var pay = document.getElementById('lead-pay'), step = modal.querySelector('.step');
+      form.hidden = true; pay.hidden = false; pay.innerHTML = '<p class="sub" style="text-align:center;padding:2rem 0">Opening secure checkout…</p>';
+      var fallback = function () { window.location.href = url; };
+      saved.then(loadWhop).then(function () {
+        pay.innerHTML = '';
+        var el = document.createElement('div'); pay.appendChild(el);
+        var c = window.WhopElements().checkout.create({
+          plan: WHOP[key(lead.plan)],
+          metadata: { lead_ref: ref },
+          returnUrl: 'https://tradingascension.co.za/?checkout=return&ref=' + encodeURIComponent(ref),
+          onComplete: function (r) {
+            if (r && r.result === 'payment') { pay.hidden = true; done.hidden = false; }
+          }
+        });
+        c.create('checkout').mount(el);
+      }).catch(fallback);
     } else { form.hidden = true; done.hidden = false; }
   });
 
