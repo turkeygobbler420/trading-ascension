@@ -153,6 +153,6 @@ var fb=document.querySelector('.final-btn');
 function upd(){var r=fb?fb.getBoundingClientRect():null;var seen=r&&r.top<window.innerHeight&&r.bottom>0;var show=window.scrollY>240&&!seen&&!document.body.classList.contains('modal-open')&&!document.querySelector('.checkout.open')&&!document.querySelector('#lead-modal.open');
 if(show!==on){on=show;s.classList.toggle('show',show);s.setAttribute('aria-hidden',show?'false':'true');s.querySelector('button').tabIndex=show?0:-1;}}
 window.addEventListener('scroll',upd,{passive:true});setInterval(upd,400);})();
-</script><script src="main.js?v=87"></script>
+</script><script src="main.js?v=88"></script>
 </body>
 </html>

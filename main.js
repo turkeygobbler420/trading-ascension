@@ -272,7 +272,7 @@
     // TikTok Pixel: lead submitted (and checkout begun when the plan has a payment link). Never blocks the flow.
     try {
       if (window.ttq) {
-        var tt = { content_name: lead.plan, content_type: 'product', currency: 'ZAR', value: current.amount ? current.amount / 100 : 0 };
+        var tt = { content_name: lead.plan, content_type: 'product' };   // no price/value is sent to TikTok
         ttq.track('SubmitForm', tt);
         ttq.track('Lead', tt);
         if (url) ttq.track('InitiateCheckout', tt);
