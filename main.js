@@ -183,7 +183,11 @@
   // Whop plan IDs per product. Add the others when you have them.
   var WHOP = { 'Trading Ascension Course': 'plan_zeK5g5GxH1eAb', 'Scalping Model': 'plan_FqiHg4UQcPmaN' };
   var whopUrl = function (plan) { var id = WHOP[key(plan)]; return id ? 'https://whop.com/checkout/' + id : ''; };
-  window.addEventListener('pageshow', function (e) { if (e.persisted && modal.classList.contains('open')) closeModal(); });
+  window.addEventListener('pageshow', function (e) {
+    var w = document.getElementById('go-whop'); if (w) w.remove();
+    document.body.style.overflow = '';
+    if (e.persisted && modal.classList.contains('open')) closeModal();
+  });
   var current = {};
   var resetPay = function () {
     var co = document.getElementById('checkout');
@@ -247,7 +251,6 @@
     var msg = 'Hi, I’m ' + name + ' (' + phone + '). I’d like to join: ' + lead.plan + '.';
     document.getElementById('lead-wa').href = 'https://wa.me/27000000000?text=' + encodeURIComponent(msg);
     document.getElementById('lead-name').textContent = name.split(' ')[0];
-    form.hidden = true;
     var url = current.amount ? whopUrl(lead.plan) : '';
     var saved = saveLead({
       name: name, email: email, country_code: f.cc.value, whatsapp: phone, plan: lead.plan,
@@ -255,8 +258,16 @@
     });
     if (url) {
       // save the lead, then hand the buyer over to Whop's hosted checkout page
+      // no leftover box: close the form and show a plain full-screen loader until Whop opens
+      modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');
+      var wait = document.createElement('div');
+      wait.id = 'go-whop';
+      wait.setAttribute('role', 'status');
+      wait.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font:600 15px Inter,system-ui,sans-serif;color:#334155';
+      wait.innerHTML = '<div style="width:34px;height:34px;border:3px solid #d1fae5;border-top-color:#16a34a;border-radius:50%;animation:gospin .8s linear infinite"></div><div>Opening secure checkout…</div><style>@keyframes gospin{to{transform:rotate(360deg)}}</style>';
+      document.body.appendChild(wait);
       saved.then(function () { window.location.href = url; });
-    } else { done.hidden = false; }
+    } else { form.hidden = true; done.hidden = false; }
   });
 
   // glass highlight follows the cursor
