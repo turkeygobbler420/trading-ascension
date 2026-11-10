@@ -288,7 +288,18 @@
       wait.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font:600 15px Inter,system-ui,sans-serif;color:#334155';
       wait.innerHTML = '<div style="width:34px;height:34px;border:3px solid #d1fae5;border-top-color:#16a34a;border-radius:50%;animation:gospin .8s linear infinite"></div><div>Opening secure checkout…</div><style>@keyframes gospin{to{transform:rotate(360deg)}}</style>';
       document.body.appendChild(wait);
-      saved.then(function () { window.location.href = go; });
+      // Ask our server for a Whop link that carries this lead's reference (so the payment matches exactly,
+      // and no personal data is in the URL). If that is unavailable, fall back to the pre-filled link above.
+      saved.then(function () {
+        var ctl = window.AbortController ? new AbortController() : null;
+        var t = setTimeout(function () { if (ctl) ctl.abort(); }, 4000);
+        return fetch(SUPABASE_URL + '/functions/v1/create-checkout', {
+          method: 'POST', signal: ctl ? ctl.signal : undefined,
+          headers: { 'Content-Type': 'application/json', apikey: SUPABASE_KEY },
+          body: JSON.stringify({ lead_ref: ref })
+        }).then(function (r) { clearTimeout(t); return r.ok ? r.json() : null; })
+          .then(function (j) { return j && /^https:\/\/whop\.com\//.test(j.url || '') ? j.url : go; });
+      }).catch(function () { return go; }).then(function (dest) { window.location.href = dest; });
     } else if (url) {
       // Step 2 happens inside this same popup (Whop embedded checkout), so the payment carries our lead_ref
       var pay = document.getElementById('lead-pay'), step = modal.querySelector('.step');
