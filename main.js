@@ -330,48 +330,124 @@
     });
   });
   $$('.marquee .lg img').forEach(function(i){function f(){var s=document.createElement('span');s.className='lgname';s.textContent=i.getAttribute('data-name');i.replaceWith(s);}i.addEventListener('error',f);if(i.complete&&!i.naturalWidth)f();});
-  // ---------- VSL player (muted autoplay preview + centred "click to turn on sound" box -> restarts from 0 with sound; no timeline) ----------
+  // ---------- VSL player (rsaconsulting/Wistia-style: click to play, green bar with total time, chapter dots, time bubble that follows) ----------
   (function () {
     var v = document.getElementById('vsl'); if (!v) return;
-    var box = v.parentNode; v.removeAttribute('controls'); box.classList.add('tp', 'tp-preview');
-    v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+    var box = v.parentNode;
+    ['controls', 'autoplay', 'loop', 'muted'].forEach(function (a) { v.removeAttribute(a); });
+    v.autoplay = false; v.loop = false; v.muted = false; v.defaultMuted = false; v.playsInline = true;
+    if (!v.paused) v.pause();
+    box.classList.add('tp', 'tp-idle');
+    // chapters (seconds, title): taken from the VSL edit's scene list
+    var CH = [
+      [0, 'Why most beginners stall'],
+      [8.55, 'What beginners are missing'],
+      [17.8, 'The Trading Ascension Model'],
+      [27.65, 'Gold, forex & indices'],
+      [38.95, 'Live classes with Jali'],
+      [49.15, 'Three years of SA traders'],
+      [61.85, 'Join Trading Ascension']
+    ];
     var I = {
       play: '<svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
       pause: '<svg viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>',
       vol: '<svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
       mute: '<svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
       full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>',
+      more: '<svg viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="18.5" cy="12" r="1.9"/></svg>',
       replay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></svg>'
     };
+    var fmt = function (s) { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); };
+    var dur = function () { return isFinite(v.duration) && v.duration > 0 ? v.duration : 66.3; };
+    var chAt = function (t) { var c = CH[0]; CH.forEach(function (x) { if (t >= x[0] - 0.05) c = x; }); return c; };
+    var dots = CH.map(function (c, i) {
+      return '<button class="tp-ch" type="button" data-t="' + c[0] + '" aria-label="Chapter ' + (i + 1) + ': ' + c[1] + '"></button>';
+    }).join('');
+    var list = CH.map(function (c) {
+      return '<button type="button" class="tp-pop-ch" data-t="' + c[0] + '"><span>' + c[1] + '</span><em>' + fmt(c[0]) + '</em></button>';
+    }).join('');
     box.insertAdjacentHTML('beforeend',
-      '<button class="tp-unmute" type="button" aria-label="Turn on sound and play from the start">' +
-        '<span class="tp-um-ic">' + I.mute + '</span>' +
-        '<span class="tp-um-t"><b>Your video is playing</b><span>Click to turn on sound</span></span>' +
-      '</button>' +
       '<button class="tp-big" type="button" aria-label="Play video">' + I.play + '</button>' +
+      '<div class="tp-pop" role="menu">' +
+        '<div class="tp-pop-h">Speed</div><div class="tp-speeds">' +
+          [0.75, 1, 1.25, 1.5, 2].map(function (r) { return '<button type="button" data-r="' + r + '"' + (r === 1 ? ' class="on"' : '') + '>' + r + 'x</button>'; }).join('') +
+        '</div><div class="tp-pop-h">Chapters</div>' + list +
+      '</div>' +
       '<div class="tp-bar">' +
         '<button class="tp-btn tp-pp" type="button" aria-label="Play">' + I.play + '</button>' +
-        '<span class="tp-gap"></span>' +
+        '<span class="tp-dur"></span>' +
+        '<div class="tp-seek" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0">' +
+          '<div class="tp-track"><div class="tp-buf"></div><div class="tp-fill"></div></div>' +
+          dots + '<div class="tp-head"></div>' +
+          '<div class="tp-tip" aria-hidden="true"><span class="tp-tip-c"></span><span class="tp-tip-t">0:00</span></div>' +
+        '</div>' +
         '<button class="tp-btn tp-vol" type="button" aria-label="Mute">' + I.vol + '</button>' +
         '<button class="tp-btn tp-fs" type="button" aria-label="Full screen">' + I.full + '</button>' +
+        '<button class="tp-btn tp-more" type="button" aria-label="Speed and chapters" aria-haspopup="true">' + I.more + '</button>' +
         '<img class="tp-logo" src="assets/ta-mark.png" alt="" aria-hidden="true">' +
       '</div>');
     var q = function (s) { return box.querySelector(s); };
-    var um = q('.tp-unmute'), umT = q('.tp-um-t'), big = q('.tp-big'), pp = q('.tp-pp'),
-        vol = q('.tp-vol'), fs = q('.tp-fs');
+    var big = q('.tp-big'), pp = q('.tp-pp'), durEl = q('.tp-dur'), seek = q('.tp-seek'), fill = q('.tp-fill'),
+        buf = q('.tp-buf'), head = q('.tp-head'), tip = q('.tp-tip'), tipT = q('.tp-tip-t'), tipC = q('.tp-tip-c'),
+        vol = q('.tp-vol'), fs = q('.tp-fs'), more = q('.tp-more'), pop = q('.tp-pop');
     var play = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); return p; };
-    var preview = function () { return box.classList.contains('tp-preview'); };
-    var setVol = function () { vol.innerHTML = v.muted ? I.mute : I.vol; vol.setAttribute('aria-label', v.muted ? 'Unmute' : 'Mute'); };
-    // the real start: sound on, back to the beginning
-    var start = function () {
-      box.classList.remove('tp-preview', 'tp-blocked');
-      v.loop = false; v.muted = false; v.currentTime = 0; setVol(); play();
+    var started = function () { return !box.classList.contains('tp-idle'); };
+    var begin = function () { box.classList.remove('tp-idle'); play(); };
+    var toggle = function () { if (!started()) { begin(); return; } if (v.paused || v.ended) { if (v.ended) v.currentTime = 0; play(); } else v.pause(); };
+    var go = function (t) { v.currentTime = Math.min(Math.max(t, 0), dur() - 0.05); if (!started() || v.paused) begin(); paint(); };
+
+    // the time bubble: follows the playhead, or the cursor while hovering/dragging the seek line
+    var hoverT = null, drag = false;
+    var place = function (t) {
+      var w = seek.clientWidth, x = t / dur() * w, hw = tip.offsetWidth / 2;
+      var cx = Math.min(Math.max(x, hw - 6), w - hw + 6);
+      tipT.textContent = fmt(t); tipC.textContent = chAt(t)[1];
+      tip.style.left = cx + 'px'; tip.style.setProperty('--ax', (x - cx) + 'px');
     };
-    var toggle = function () { if (v.paused || v.ended) play(); else v.pause(); };
+    var paint = function () {
+      var t = v.currentTime, p = Math.min(t / dur() * 100, 100);
+      fill.style.width = p + '%'; head.style.left = p + '%';
+      seek.setAttribute('aria-valuemax', Math.round(dur())); seek.setAttribute('aria-valuenow', Math.round(t));
+      seek.setAttribute('aria-valuetext', fmt(t) + ' of ' + fmt(dur()) + ', ' + chAt(t)[1]);
+      if (v.buffered.length) buf.style.width = Math.min(v.buffered.end(v.buffered.length - 1) / dur() * 100, 100) + '%';
+      if (hoverT === null) place(t);
+    };
+    var setDur = function () { durEl.textContent = fmt(dur()); CH.forEach(function (c, i) { box.querySelectorAll('.tp-ch')[i].style.left = (c[0] / dur() * 100) + '%'; }); paint(); };
+    setDur();
+    ['loadedmetadata', 'durationchange'].forEach(function (e) { v.addEventListener(e, setDur); });
+    ['timeupdate', 'progress', 'seeked'].forEach(function (e) { v.addEventListener(e, paint); });
+    var raf = 0, loop = function () { paint(); raf = !v.paused ? requestAnimationFrame(loop) : 0; };
+
+    var tAt = function (e) { var r = seek.getBoundingClientRect(); return Math.min(Math.max((e.clientX - r.left) / r.width, 0), 1) * dur(); };
+    var hover = function (e) {
+      var c = !drag && e.target.closest && e.target.closest('.tp-ch');
+      hoverT = c ? +c.getAttribute('data-t') : tAt(e);
+      box.classList.add('tp-hov'); place(hoverT);
+      if (drag) { v.currentTime = hoverT; paint(); }
+    };
+    var unhover = function () { hoverT = null; box.classList.remove('tp-hov'); paint(); };
+    seek.addEventListener('pointermove', hover);
+    seek.addEventListener('pointerleave', function () { if (!drag) unhover(); });
+    seek.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('.tp-ch')) return;
+      drag = true; try { seek.setPointerCapture(e.pointerId); } catch (x) {}
+      box.classList.add('tp-drag'); hover(e); go(hoverT);
+    });
+    var endDrag = function (e) { if (!drag) return; drag = false; box.classList.remove('tp-drag'); if (e.pointerType !== 'mouse') unhover(); wake(); };
+    seek.addEventListener('pointerup', endDrag); seek.addEventListener('pointercancel', endDrag);
+    box.querySelectorAll('.tp-ch').forEach(function (b) {
+      b.addEventListener('click', function (e) { e.stopPropagation(); go(+b.getAttribute('data-t')); });
+    });
+    seek.addEventListener('keydown', function (e) {
+      var d = { ArrowRight: 5, ArrowLeft: -5, ArrowUp: 5, ArrowDown: -5 }[e.key];
+      if (e.key === 'Home') { e.preventDefault(); go(0); } else if (e.key === 'End') { e.preventDefault(); go(dur()); }
+      else if (d) { e.preventDefault(); e.stopPropagation(); go(v.currentTime + d); }
+    });
+
     var idle = 0;
     var wake = function () {
       box.classList.add('tp-active'); clearTimeout(idle);
-      if (!v.paused) idle = setTimeout(function () { box.classList.remove('tp-active'); }, 2200);
+      if (!v.paused) idle = setTimeout(function () { if (!box.classList.contains('tp-hov') && !box.classList.contains('tp-menu')) box.classList.remove('tp-active'); }, 2200);
     };
     var state = function () {
       var playing = !v.paused && !v.ended;
@@ -379,21 +455,22 @@
       box.classList.toggle('tp-ended', v.ended);
       pp.innerHTML = playing ? I.pause : I.play; pp.setAttribute('aria-label', playing ? 'Pause' : 'Play');
       big.innerHTML = v.ended ? I.replay : I.play; big.setAttribute('aria-label', v.ended ? 'Replay video' : 'Play video');
-      if (!preview()) wake();
+      if (playing && !raf) raf = requestAnimationFrame(loop);
+      wake(); paint();
     };
     ['play', 'pause', 'ended'].forEach(function (e) { v.addEventListener(e, state); });
-    um.addEventListener('click', start);
-    big.addEventListener('click', function () { if (preview()) { start(); return; } if (v.ended) v.currentTime = 0; play(); });
+    big.addEventListener('click', toggle);
     pp.addEventListener('click', toggle);
     v.addEventListener('click', function () {
-      if (preview()) { start(); return; }
+      if (box.classList.contains('tp-menu')) { closeMenu(); return; }
       // touch screens: while playing, the first tap only shows the controls
       if (!v.paused && matchMedia('(hover: none)').matches && !box.classList.contains('tp-active')) { wake(); return; }
       toggle();
     });
-    box.addEventListener('mousemove', function () { if (!preview()) wake(); });
-    box.addEventListener('mouseleave', function () { if (!v.paused) box.classList.remove('tp-active'); });
-    box.addEventListener('touchstart', function () { if (!preview()) wake(); }, { passive: true });
+    box.addEventListener('mousemove', wake);
+    box.addEventListener('mouseleave', function () { if (!v.paused && !box.classList.contains('tp-menu')) box.classList.remove('tp-active'); });
+    box.addEventListener('touchstart', wake, { passive: true });
+    var setVol = function () { vol.innerHTML = v.muted ? I.mute : I.vol; vol.setAttribute('aria-label', v.muted ? 'Unmute' : 'Mute'); };
     vol.addEventListener('click', function () { v.muted = !v.muted; setVol(); });
     fs.addEventListener('click', function () {
       var d = document;
@@ -402,12 +479,23 @@
       else if (box.webkitRequestFullscreen) box.webkitRequestFullscreen();
       else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();   // iPhone
     });
-    box.addEventListener('keydown', function (e) {
-      if ((e.key === ' ' || e.key === 'k') && e.target.tagName !== 'BUTTON') { e.preventDefault(); preview() ? start() : toggle(); }
+    // "..." menu: playback speed + chapter list
+    var closeMenu = function () { box.classList.remove('tp-menu'); more.setAttribute('aria-expanded', 'false'); wake(); };
+    more.addEventListener('click', function (e) { e.stopPropagation(); var o = box.classList.toggle('tp-menu'); more.setAttribute('aria-expanded', o); wake(); });
+    pop.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var b = e.target.closest('button'); if (!b) return;
+      if (b.hasAttribute('data-r')) {
+        v.playbackRate = +b.getAttribute('data-r');
+        pop.querySelectorAll('[data-r]').forEach(function (x) { x.classList.toggle('on', x === b); });
+      } else { go(+b.getAttribute('data-t')); closeMenu(); }
     });
-    // silent preview starts on its own; if the browser blocks even muted autoplay (e.g. phone low-power mode),
-    // the same box says "Click to play with sound" and starts the video with sound
-    var p = play();
-    if (p && p.catch) p.catch(function () { box.classList.add('tp-blocked'); umT.innerHTML = '<b>Watch the video</b><span>Click to play with sound</span>'; });
+    document.addEventListener('click', function (e) { if (box.classList.contains('tp-menu') && !box.contains(e.target)) closeMenu(); });
+    box.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { closeMenu(); return; }
+      if (e.target.tagName === 'BUTTON' || e.target === seek) return;
+      if (e.key === ' ' || e.key === 'k') { e.preventDefault(); toggle(); }
+      else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); go(v.currentTime + (e.key === 'ArrowRight' ? 5 : -5)); }
+    });
   })();
 })();
