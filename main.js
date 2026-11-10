@@ -330,4 +330,88 @@
     });
   });
   $$('.marquee .lg img').forEach(function(i){function f(){var s=document.createElement('span');s.className='lgname';s.textContent=i.getAttribute('data-name');i.replaceWith(s);}i.addEventListener('error',f);if(i.complete&&!i.naturalWidth)f();});
+  // ---------- VSL player (muted autoplay preview -> click for sound restarts from 0; no timestamps, no scrubbing) ----------
+  (function () {
+    var v = document.getElementById('vsl'); if (!v) return;
+    var box = v.parentNode; v.removeAttribute('controls'); box.classList.add('tp', 'tp-preview');
+    v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+    var I = {
+      play: '<svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
+      pause: '<svg viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>',
+      vol: '<svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+      mute: '<svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+      full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>',
+      replay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></svg>'
+    };
+    box.insertAdjacentHTML('beforeend',
+      '<button class="tp-unmute" type="button" aria-label="Turn on sound and play from the start">' +
+        '<span class="tp-um-ic">' + I.mute + '</span>' +
+        '<span class="tp-um-t"><b>Your video is playing</b><span>Click to turn on sound</span></span>' +
+      '</button>' +
+      '<button class="tp-big" type="button" aria-label="Play video">' + I.play + '</button>' +
+      '<div class="tp-prog" aria-hidden="true"><div class="tp-fill"></div></div>' +
+      '<div class="tp-bar">' +
+        '<button class="tp-btn tp-pp" type="button" aria-label="Play">' + I.play + '</button>' +
+        '<span class="tp-gap"></span>' +
+        '<button class="tp-btn tp-vol" type="button" aria-label="Mute">' + I.vol + '</button>' +
+        '<button class="tp-btn tp-fs" type="button" aria-label="Full screen">' + I.full + '</button>' +
+        '<img class="tp-logo" src="assets/ta-mark.png" alt="" aria-hidden="true">' +
+      '</div>');
+    var q = function (s) { return box.querySelector(s); };
+    var um = q('.tp-unmute'), umT = q('.tp-um-t'), big = q('.tp-big'), pp = q('.tp-pp'), fill = q('.tp-fill'),
+        vol = q('.tp-vol'), fs = q('.tp-fs');
+    var play = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); return p; };
+    var preview = function () { return box.classList.contains('tp-preview'); };
+    var setVol = function () { vol.innerHTML = v.muted ? I.mute : I.vol; vol.setAttribute('aria-label', v.muted ? 'Unmute' : 'Mute'); };
+    // the real start: sound on, back to the beginning
+    var start = function () {
+      box.classList.remove('tp-preview', 'tp-blocked');
+      v.loop = false; v.muted = false; v.currentTime = 0; setVol(); play();
+    };
+    var toggle = function () { if (v.paused || v.ended) play(); else v.pause(); };
+    var idle = 0;
+    var wake = function () {
+      box.classList.add('tp-active'); clearTimeout(idle);
+      if (!v.paused) idle = setTimeout(function () { box.classList.remove('tp-active'); }, 2200);
+    };
+    var paint = function () { var d = v.duration || 0; fill.style.width = (d ? v.currentTime / d * 100 : 0) + '%'; };
+    var state = function () {
+      var playing = !v.paused && !v.ended;
+      box.classList.toggle('tp-playing', playing);
+      box.classList.toggle('tp-ended', v.ended);
+      pp.innerHTML = playing ? I.pause : I.play; pp.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+      big.innerHTML = v.ended ? I.replay : I.play; big.setAttribute('aria-label', v.ended ? 'Replay video' : 'Play video');
+      if (!preview()) wake();
+    };
+    ['play', 'pause', 'ended'].forEach(function (e) { v.addEventListener(e, state); });
+    ['timeupdate', 'loadedmetadata', 'durationchange'].forEach(function (e) { v.addEventListener(e, paint); });
+    um.addEventListener('click', start);
+    big.addEventListener('click', function () { if (v.ended) v.currentTime = 0; play(); });
+    pp.addEventListener('click', toggle);
+    v.addEventListener('click', function () {
+      if (preview()) { start(); return; }
+      // touch screens: while playing, the first tap only shows the controls
+      if (!v.paused && matchMedia('(hover: none)').matches && !box.classList.contains('tp-active')) { wake(); return; }
+      toggle();
+    });
+    box.addEventListener('mousemove', function () { if (!preview()) wake(); });
+    box.addEventListener('mouseleave', function () { if (!v.paused) box.classList.remove('tp-active'); });
+    box.addEventListener('touchstart', function () { if (!preview()) wake(); }, { passive: true });
+    vol.addEventListener('click', function () { v.muted = !v.muted; setVol(); });
+    fs.addEventListener('click', function () {
+      var d = document;
+      if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+      else if (box.requestFullscreen) box.requestFullscreen();
+      else if (box.webkitRequestFullscreen) box.webkitRequestFullscreen();
+      else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();   // iPhone
+    });
+    box.addEventListener('keydown', function (e) {
+      if ((e.key === ' ' || e.key === 'k') && e.target.tagName !== 'BUTTON') { e.preventDefault(); preview() ? start() : toggle(); }
+    });
+    // silent preview starts on its own; if the browser blocks even muted autoplay (e.g. phone low-power mode),
+    // the same button just says "Click to play" and starts with sound
+    var p = play();
+    if (p && p.catch) p.catch(function () { box.classList.add('tp-blocked'); umT.innerHTML = '<b>Watch the video</b><span>Click to play with sound</span>'; });
+    paint();
+  })();
 })();
