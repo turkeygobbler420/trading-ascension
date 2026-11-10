@@ -716,7 +716,7 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 .tp-big:hover{background:#22c55e;transform:translate(-50%,-50%) scale(1.06)}
 .tp-playing .tp-big{opacity:0;pointer-events:none}
 .tp-bar{position:absolute;left:6px;right:6px;bottom:6px;display:flex;align-items:center;gap:.15rem;height:2.5rem;padding:0 .45rem 0 .25rem;border-radius:10px;background:rgba(21,128,61,.94);color:#fff;transition:opacity .3s,transform .3s;z-index:3}
-.tp-idle .tp-bar,.tp-playing:not(.tp-active) .tp-bar{opacity:0;pointer-events:none;transform:translateY(calc(100% + 6px))}
+.tp-idle .tp-bar,.tp:not(.tp-active) .tp-bar{opacity:0;pointer-events:none;transform:translateY(calc(100% + 6px))}
 .tp-playing:not(.tp-active) video{cursor:none}
 .tp-btn{flex:none;width:2.1rem;height:2.1rem;border:0;border-radius:8px;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0}
 .tp-btn svg{width:1.15rem;height:1.15rem;fill:currentColor}
