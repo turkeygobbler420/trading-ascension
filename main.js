@@ -433,7 +433,7 @@
       drag = true; try { seek.setPointerCapture(e.pointerId); } catch (x) {}
       box.classList.add('tp-drag'); hover(e); go(hoverT);
     });
-    var endDrag = function (e) { if (!drag) return; drag = false; box.classList.remove('tp-drag'); if (e.pointerType !== 'mouse') unhover(); wake(); };
+    var endDrag = function (e) { if (e.pointerType !== 'mouse') unhover(); if (!drag) return; drag = false; box.classList.remove('tp-drag'); wake(); };
     seek.addEventListener('pointerup', endDrag); seek.addEventListener('pointercancel', endDrag);
     box.querySelectorAll('.tp-ch').forEach(function (b) {
       b.addEventListener('click', function (e) { e.stopPropagation(); go(+b.getAttribute('data-t')); });
@@ -444,10 +444,14 @@
       else if (d) { e.preventDefault(); e.stopPropagation(); go(v.currentTime + d); }
     });
 
-    var idle = 0;
+    var idle = 0, touch = matchMedia('(hover: none)').matches;
     var wake = function () {
       box.classList.add('tp-active'); clearTimeout(idle);
-      if (!v.paused) idle = setTimeout(function () { if (!box.classList.contains('tp-hov') && !box.classList.contains('tp-menu')) box.classList.remove('tp-active'); }, 2200);
+      // bar + time stamps fade out on their own while playing (sooner on touch screens)
+      if (!v.paused) idle = setTimeout(function () {
+        if (touch) { hoverT = null; box.classList.remove('tp-hov'); }
+        if (!drag && !box.classList.contains('tp-hov') && !box.classList.contains('tp-menu')) box.classList.remove('tp-active');
+      }, touch ? 1800 : 2200);
     };
     var state = function () {
       var playing = !v.paused && !v.ended;
@@ -467,7 +471,7 @@
       if (!v.paused && matchMedia('(hover: none)').matches && !box.classList.contains('tp-active')) { wake(); return; }
       toggle();
     });
-    box.addEventListener('mousemove', wake);
+    box.addEventListener('mousemove', function () { if (!touch) wake(); });
     box.addEventListener('mouseleave', function () { if (!v.paused && !box.classList.contains('tp-menu')) box.classList.remove('tp-active'); });
     box.addEventListener('touchstart', wake, { passive: true });
     var setVol = function () { vol.innerHTML = v.muted ? I.mute : I.vol; vol.setAttribute('aria-label', v.muted ? 'Unmute' : 'Mute'); };
