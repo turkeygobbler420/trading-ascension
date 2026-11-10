@@ -702,3 +702,7 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 /* v75 whop embedded checkout */
 .whop-mount{min-height:22rem;margin:1rem 0}
 .whop-mount .co-note{text-align:center;padding:2rem 0}
+
+/* VSL player */
+.video{overflow:hidden;padding:0;display:block}
+.video video{display:block;width:100%;height:100%;object-fit:contain;background:#fff;border-radius:inherit}
