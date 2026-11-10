@@ -330,7 +330,7 @@
     });
   });
   $$('.marquee .lg img').forEach(function(i){function f(){var s=document.createElement('span');s.className='lgname';s.textContent=i.getAttribute('data-name');i.replaceWith(s);}i.addEventListener('error',f);if(i.complete&&!i.naturalWidth)f();});
-  // ---------- VSL player (muted autoplay preview + corner "click for sound" pill -> restarts from 0 with sound; no timeline) ----------
+  // ---------- VSL player (muted autoplay preview + centred "click to turn on sound" box -> restarts from 0 with sound; no timeline) ----------
   (function () {
     var v = document.getElementById('vsl'); if (!v) return;
     var box = v.parentNode; v.removeAttribute('controls'); box.classList.add('tp', 'tp-preview');
@@ -344,9 +344,9 @@
       replay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></svg>'
     };
     box.insertAdjacentHTML('beforeend',
-      '<button class="tp-unmute" type="button" aria-label="Click for sound">' +
-        '<span class="tp-um-t">Click for sound</span>' +
-        '<svg class="tp-um-ic" viewBox="0 0 48 48" aria-hidden="true"><path class="tp-um-spk" d="M11 19.5h6.5L25 13v22l-7.5-6.5H11z"/><path class="tp-um-w1" d="M30 18.5c2.4 3.5 2.4 7.5 0 11"/><path class="tp-um-w2" d="M34.5 14.5c4.6 6 4.6 13 0 19"/></svg>' +
+      '<button class="tp-unmute" type="button" aria-label="Turn on sound and play from the start">' +
+        '<span class="tp-um-ic">' + I.mute + '</span>' +
+        '<span class="tp-um-t"><b>Your video is playing</b><span>Click to turn on sound</span></span>' +
       '</button>' +
       '<button class="tp-big" type="button" aria-label="Play video">' + I.play + '</button>' +
       '<div class="tp-bar">' +
@@ -357,7 +357,7 @@
         '<img class="tp-logo" src="assets/ta-mark.png" alt="" aria-hidden="true">' +
       '</div>');
     var q = function (s) { return box.querySelector(s); };
-    var um = q('.tp-unmute'), big = q('.tp-big'), pp = q('.tp-pp'),
+    var um = q('.tp-unmute'), umT = q('.tp-um-t'), big = q('.tp-big'), pp = q('.tp-pp'),
         vol = q('.tp-vol'), fs = q('.tp-fs');
     var play = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); return p; };
     var preview = function () { return box.classList.contains('tp-preview'); };
@@ -406,8 +406,8 @@
       if ((e.key === ' ' || e.key === 'k') && e.target.tagName !== 'BUTTON') { e.preventDefault(); preview() ? start() : toggle(); }
     });
     // silent preview starts on its own; if the browser blocks even muted autoplay (e.g. phone low-power mode),
-    // the big green play button shows instead and starts the video with sound
+    // the same box says "Click to play with sound" and starts the video with sound
     var p = play();
-    if (p && p.catch) p.catch(function () { box.classList.add('tp-blocked'); });
+    if (p && p.catch) p.catch(function () { box.classList.add('tp-blocked'); umT.innerHTML = '<b>Watch the video</b><span>Click to play with sound</span>'; });
   })();
 })();
