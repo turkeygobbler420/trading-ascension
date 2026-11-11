@@ -188,7 +188,7 @@
     document.body.style.overflow = '';
     if (e.persisted && modal.classList.contains('open')) closeModal();
   });
-  var EMBED = false;   // true = take payment inside the popup (Whop embedded checkout)
+  var EMBED = true;    // true = take payment inside the popup (Whop embedded checkout)
   var current = {};
   var loadWhop = function () {
     return new Promise(function (res, rej) {
@@ -232,9 +232,71 @@
   });
   $$('[data-close]').forEach(function (b) { b.addEventListener('click', closeModal); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+  // ---------- full-screen checkout page (Step 2) ----------
+  var money = function (c) { return 'R' + Math.round(c / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); };
+  var esc = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var payPage = null, payHandle = null;
+  var closePayPage = function () {
+    if (!payPage) return;
+    try { payHandle && payHandle.destroy && payHandle.destroy(); } catch (_) {}
+    payHandle = null; payPage.remove(); payPage = null;
+    document.body.style.overflow = ''; document.body.classList.remove('pay-open');
+    if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (_) {}
+  };
+  var openPayPage = function (c) {
+    closePayPage();
+    var items = (PLANS[key(c.plan)] || []).map(function (i) { return '<li><b>' + esc(i[0]) + '</b>' + (i[1] ? ' <span>' + esc(i[1]) + '</span>' : '') + '</li>'; }).join('');
+    var el = document.createElement('div');
+    el.className = 'pay-page'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'Checkout');
+    el.innerHTML =
+      '<header class="pp-top"><button type="button" class="pp-back" data-pp-close>&larr; Back</button><img class="pp-logo" src="assets/ta-logo.png" alt="Trading Ascension"></header>' +
+      '<main class="pp-body">' +
+        '<div class="pp-head"><h1>' + esc(c.plan) + '</h1><div class="pp-price">' + money(c.amount) + '</div></div>' +
+        '<p class="pp-for">Once-off payment · access sent to ' + esc(c.email) + '</p>' +
+        (items ? '<div class="pp-inc"><p>What you get</p><ul>' + items + '</ul></div>' : '') +
+        '<div class="pp-mount"><div class="pp-load">Loading checkout…</div></div>' +
+        '<p class="pp-fine">Secure payment processed by Whop.</p>' +
+      '</main>' +
+      '<div class="pp-done" hidden><div class="pp-done-in"><div class="tick">✓</div><h2>Payment received, ' + esc(c.name.split(' ')[0]) + '</h2>' +
+        '<p>Your access details are on the way to <b>' + esc(c.email) + '</b>. Check your inbox (and spam) in the next few minutes.</p>' +
+        '<a class="btn" href="' + esc(c.wa) + '" target="_blank" rel="noopener">Message us on WhatsApp ↗</a><br><button type="button" class="link" data-pp-close>Back to site</button></div></div>';
+    document.body.appendChild(el);
+    payPage = el; document.body.classList.add('pay-open'); document.body.style.overflow = 'hidden';
+    el.querySelectorAll('[data-pp-close]').forEach(function (b) { b.addEventListener('click', closePayPage); });
+    requestAnimationFrame(function () { el.classList.add('in'); });
+    var mount = el.querySelector('.pp-mount');
+    var holder = document.createElement('div'); mount.appendChild(holder);
+    var ready = function () { var l = mount.querySelector('.pp-load'); if (l) l.remove(); };
+    if (window.MutationObserver) {   // hide the spinner as soon as Whop's form appears (onReady is not guaranteed)
+      var mo = new MutationObserver(function () { var f = holder.querySelector('iframe'); if (f) { mo.disconnect(); f.addEventListener('load', ready); setTimeout(ready, 2500); } });
+      mo.observe(holder, { childList: true, subtree: true });
+    }
+    return {
+      mount: holder,
+      setHandle: function (h) { payHandle = h; },
+      ready: ready,
+      success: function () { var d = el.querySelector('.pp-done'); d.hidden = false; requestAnimationFrame(function () { d.classList.add('in'); }); el.querySelector('.pp-body').setAttribute('aria-hidden', 'true'); }
+    };
+  };
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && payPage) closePayPage(); });
   // ---------- save leads to Supabase (table: public.leads, insert-only) ----------
   var SUPABASE_URL = 'https://fbitbdhcimuiupptrwev.supabase.co';   // e.g. https://xxxx.supabase.co
   var SUPABASE_KEY = 'sb_publishable_90Vx7O7LI-JQVPZ6Zls43w_QLcfmvix';   // the public "anon" key (safe in the browser, RLS allows insert only)
+  // TikTok attribution: remember the ad click (ttclid) for 90 days so the purchase can be tied back to this visitor
+  var tiktokInfo = function () {
+    var out = {};
+    try {
+      var qs = new URLSearchParams(location.search), st = JSON.parse(localStorage.getItem('ta_attr') || '{}');
+      if (qs.get('ttclid')) { st.ttclid = qs.get('ttclid'); st.t = Date.now(); }
+      if (qs.get('utm_source')) st.utm_source = qs.get('utm_source');
+      if (st.t && Date.now() - st.t > 90 * 864e5) st = {};
+      localStorage.setItem('ta_attr', JSON.stringify(st));
+      var m = document.cookie.match(/(?:^|; )_ttp=([^;]+)/);
+      out = { ttclid: st.ttclid || null, utm_source: st.utm_source || null, ttp: m ? decodeURIComponent(m[1]) : null, user_agent: navigator.userAgent.slice(0, 300) };
+    } catch (_) {}
+    return out;
+  };
+  tiktokInfo();   // run on landing so the click id is stored even before the form is opened
   var saveLead = function (row) {
     if (!SUPABASE_URL || !SUPABASE_KEY) return Promise.resolve();
     var req = fetch(SUPABASE_URL + '/rest/v1/leads', {
@@ -265,19 +327,11 @@
     var url = current.amount ? whopUrl(lead.plan) : '';
     // lead_ref ties this exact form submission to the Whop payment (sent to Whop as checkout metadata)
     var ref = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
-    var saved = saveLead({
+    var saved = saveLead(Object.assign({
       name: name, email: email, country_code: f.cc.value, whatsapp: phone, plan: lead.plan, lead_ref: ref,
       amount_zar: current.amount ? current.amount / 100 : null, page_url: location.href, status: url ? 'checkout_started' : 'new'
-    });
-    // TikTok Pixel: lead submitted (and checkout begun when the plan has a payment link). Never blocks the flow.
-    try {
-      if (window.ttq) {
-        var tt = { content_name: lead.plan, content_type: 'product' };   // no price/value is sent to TikTok
-        ttq.track('SubmitForm', tt);
-        ttq.track('Lead', tt);
-        if (url) ttq.track('InitiateCheckout', tt);
-      }
-    } catch (_) {}
+    }, tiktokInfo()));
+    // No TikTok events are sent from the browser here. TikTok is only told about a purchase, by the server, after Whop confirms a successful payment.
     if (url && !EMBED) {
       // Hosted Whop checkout, with the buyer's email/name pre-filled so the payment matches this lead
       var go = url + '?email=' + encodeURIComponent(email) + '&name=' + encodeURIComponent(name);
@@ -301,23 +355,23 @@
           .then(function (j) { return j && /^https:\/\/whop\.com\//.test(j.url || '') ? j.url : go; });
       }).catch(function () { return go; }).then(function (dest) { window.location.href = dest; });
     } else if (url) {
-      // Step 2 happens inside this same popup (Whop embedded checkout), so the payment carries our lead_ref
-      var pay = document.getElementById('lead-pay'), step = modal.querySelector('.step');
-      form.hidden = true; pay.hidden = false; pay.innerHTML = '<p class="sub" style="text-align:center;padding:2rem 0">Opening secure checkout…</p>';
-      var fallback = function () { window.location.href = url; };
+      // Step 2: our own full-screen checkout page, with Whop's secure payment form embedded in it.
+      // The payment carries our lead_ref so it matches this exact lead.
+      modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'false'); modal.setAttribute('aria-hidden', 'true');
+      var ctx = { plan: lead.plan, name: name, email: email, amount: current.amount, ref: ref, wa: document.getElementById('lead-wa').href };
+      var pg = openPayPage(ctx);
       saved.then(loadWhop).then(function () {
-        pay.innerHTML = '';
-        var el = document.createElement('div'); pay.appendChild(el);
         var c = window.WhopElements().checkout.create({
           plan: WHOP[key(lead.plan)],
           metadata: { lead_ref: ref },
           returnUrl: 'https://tradingascension.co.za/?checkout=return&ref=' + encodeURIComponent(ref),
-          onComplete: function (r) {
-            if (r && r.result === 'payment') { pay.hidden = true; done.hidden = false; }
-          }
+          appearance: { classes: { 'whop-CheckoutDetails': { display: 'none' } } },   // our page shows the order summary
+          onReady: function () { pg.ready(); },
+          onComplete: function (r) { if (r && r.result === 'payment') pg.success(); }
         });
-        c.create('checkout').mount(el);
-      }).catch(fallback);
+        pg.setHandle(c);
+        c.create('checkout').mount(pg.mount);
+      }).catch(function () { window.location.href = url; });
     } else { form.hidden = true; done.hidden = false; }
   });
 

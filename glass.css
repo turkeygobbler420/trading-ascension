@@ -758,3 +758,34 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 .tp:fullscreen video{object-fit:contain}
 .tp:fullscreen{border-radius:0!important;border:0!important}
 @media (max-width:560px){.tp-logo,.tp-vol{display:none}.tp-bar{height:2.3rem;left:4px;right:4px;bottom:4px}.tp-btn{width:1.9rem}.tp-seek{margin:0 .55rem}.tp-pop{bottom:calc(2.3rem + 10px)}}
+
+/* ===== full-screen checkout page (Step 2) ===== */
+.pay-page{position:fixed;inset:0;z-index:300;background:#fff;color:var(--ink);overflow-y:auto;opacity:0;transition:opacity .2s}
+.pay-page.in{opacity:1}
+.pp-top{padding:16px 20px;display:flex;align-items:center;justify-content:center;position:relative;min-height:64px}
+.pp-top .pp-back{position:absolute;left:20px}
+.pp-logo{height:34px;width:auto}
+.pp-back{background:none;border:0;font:inherit;font-size:15px;color:var(--mute);cursor:pointer;padding:6px 0}
+.pp-back:hover{color:var(--ink)}
+.pp-body{max-width:460px;margin:0 auto;padding:8px 20px 56px}
+.pp-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.pp-head h1{font-size:22px;font-weight:700;margin:0}
+.pp-price{font-size:22px;font-weight:700}
+.pp-for{color:var(--mute);font-size:14px;margin:6px 0 24px;overflow-wrap:anywhere}
+.pp-mount{min-height:260px}
+.pp-load{color:var(--mute);font-size:14px;padding:40px 0;text-align:center}
+.pp-fine{color:var(--mute);font-size:12px;text-align:center;margin-top:20px}
+.pp-done{position:absolute;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;opacity:0;transition:opacity .25s}
+.pp-done[hidden]{display:none}
+.pp-done.in{opacity:1}
+.pp-done-in{max-width:380px}
+.pp-done .tick{width:56px;height:56px;border-radius:50%;background:var(--p1);color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.pp-done h2{font-size:22px;margin:0 0 10px}
+.pp-done p{color:var(--mute);margin:0 0 20px}
+.pp-done .link{background:none;border:0;color:var(--mute);margin-top:14px;cursor:pointer;font:inherit;text-decoration:underline}
+.pp-inc{border:1px solid var(--edge);border-radius:12px;padding:14px 16px;margin:0 0 24px}
+.pp-inc p{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:0 0 8px}
+.pp-inc ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:14px}
+.pp-inc li{padding-left:22px;position:relative;line-height:1.4}
+.pp-inc li:before{content:"✓";position:absolute;left:0;color:var(--p1);font-weight:700}
+.pp-inc li span{color:var(--mute)}
