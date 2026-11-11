@@ -333,7 +333,7 @@
     var nat = f.phone.value.replace(/[\s\-().]/g, '').replace(/^\+?27/, '').replace(/^0/, '');
     var phoneOk = /^[6-8]\d{8}$/.test(nat) && !/(\d)\1{5,}/.test(nat) && !/123456789|87654321/.test(nat); // mobile prefixes 6x/7x/8x; rejects 0820000000-style fakes
     var phone = '+27 ' + nat;
-    [[f.name, name.length > 1 && /\S+\s+\S+/.test(name)], [f.email, /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)], [f.phone, phoneOk]].forEach(function (p) {
+    [[f.name, name.length > 1], [f.email, /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)], [f.phone, phoneOk]].forEach(function (p) {
       p[0].classList.toggle('bad', !p[1]); if (!p[1]) ok = false;
     });
     if (!ok) return;
