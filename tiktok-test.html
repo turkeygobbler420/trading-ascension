@@ -9,7 +9,7 @@ img{height:34px;display:block;margin:0 auto 28px}
 h1{font-size:24px;margin:0 0 8px}p{color:#5b6b62;line-height:1.5;font-size:15px}
 ol{color:#5b6b62;font-size:14px;line-height:1.6;padding-left:20px}
 label{display:block;font-weight:600;font-size:14px;margin:20px 0 6px}
-input{width:100%;box-sizing:border-box;padding:14px;font-size:16px;border:1px solid #cfd8d2;border-radius:10px}
+select,input{width:100%;box-sizing:border-box;padding:14px;font-size:16px;border:1px solid #cfd8d2;border-radius:10px}
 button{width:100%;margin-top:18px;padding:22px 16px;font-size:20px;font-weight:700;color:#fff;background:#16a34a;border:0;border-radius:14px;cursor:pointer}
 button:disabled{opacity:.6;cursor:wait}
 #out{margin-top:20px;padding:14px;border-radius:10px;font-size:14px;white-space:pre-wrap;word-break:break-word;display:none}
@@ -19,6 +19,8 @@ button:disabled{opacity:.6;cursor:wait}
 <h1>TikTok purchase test</h1>
 <p>Sends one test "CompletePayment" (purchase) event to TikTok through the same server connection real purchases use. It is marked as a test, so it will not count in your ad reporting.</p>
 <ol><li>In TikTok Events Manager open the pixel, then <b>Test events</b>, and copy the test event code.</li><li>Paste it below and press the button.</li><li>The event should appear in the Test events tab within a minute.</li></ol>
+<label for="plan">Plan</label>
+<select id="plan"><option>Trading Ascension Course</option><option>Scalping Model</option></select>
 <label for="code">TikTok test event code</label>
 <input id="code" placeholder="e.g. TEST12345" autocomplete="off">
 <button id="go" type="button">Send test purchase to TikTok</button>
@@ -27,7 +29,7 @@ button:disabled{opacity:.6;cursor:wait}
 <script>
 (function(){
   var URL='https://fbitbdhcimuiupptrwev.supabase.co/functions/v1/tiktok-test';
-  var code=document.getElementById('code'),go=document.getElementById('go'),out=document.getElementById('out');
+  var code=document.getElementById('code'),plan=document.getElementById('plan'),go=document.getElementById('go'),out=document.getElementById('out');
   try{code.value=localStorage.getItem('ta_tt_code')||''}catch(_){}
   var show=function(c,t){out.className=c;out.style.display='block';out.textContent=t};
   go.addEventListener('click',function(){
@@ -35,7 +37,7 @@ button:disabled{opacity:.6;cursor:wait}
     try{localStorage.setItem('ta_tt_code',v)}catch(_){}
     var m=document.cookie.match(/(?:^|; )_ttp=([^;]+)/), q=new URLSearchParams(location.search);
     go.disabled=true; go.textContent='Sending…';
-    fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({test_event_code:v,ttclid:q.get('ttclid')||undefined,ttp:m?decodeURIComponent(m[1]):undefined,user_agent:navigator.userAgent})})
+    fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({test_event_code:v,plan:plan.value,ttclid:q.get('ttclid')||undefined,ttp:m?decodeURIComponent(m[1]):undefined,user_agent:navigator.userAgent})})
     .then(function(r){return r.json()}).then(function(j){
       if(j.ok) show('ok','Sent. TikTok accepted the test purchase.\nEvent id: '+j.event_id+'\nNow check Events Manager > Test events.');
       else show('err','TikTok did not accept it.\n'+(j.error||JSON.stringify(j.tiktok)));
