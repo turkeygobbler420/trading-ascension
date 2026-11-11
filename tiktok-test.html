@@ -20,7 +20,7 @@ button:disabled{opacity:.6;cursor:wait}
 <p>Sends one test "CompletePayment" (purchase) event to TikTok through the same server connection real purchases use. It is marked as a test, so it will not count in your ad reporting.</p>
 <ol><li>In TikTok Events Manager open the pixel, then <b>Test events</b>, and copy the test event code.</li><li>Paste it below and press the button.</li><li>The event should appear in the Test events tab within a minute.</li></ol>
 <label for="plan">Plan</label>
-<select id="plan"><option>Trading Ascension Course</option><option>Scalping Model</option></select>
+<select id="plan"><option value="Trading Ascension Course" data-p="1,499">Trading Ascension Course - R1,499</option><option value="Scalping Model" data-p="999">Scalping Model - R999</option></select>
 <label for="code">TikTok test event code</label>
 <input id="code" placeholder="e.g. TEST12345" autocomplete="off">
 <button id="go" type="button">Send test purchase to TikTok</button>
@@ -29,7 +29,9 @@ button:disabled{opacity:.6;cursor:wait}
 <script>
 (function(){
   var URL='https://fbitbdhcimuiupptrwev.supabase.co/functions/v1/tiktok-test';
+  function label(){var o=plan.options[plan.selectedIndex];go.textContent='Send test purchase: R'+o.getAttribute('data-p')+' ('+o.value+')'}
   var code=document.getElementById('code'),plan=document.getElementById('plan'),go=document.getElementById('go'),out=document.getElementById('out');
+  plan.addEventListener('change',label);label();
   try{code.value=localStorage.getItem('ta_tt_code')||''}catch(_){}
   var show=function(c,t){out.className=c;out.style.display='block';out.textContent=t};
   go.addEventListener('click',function(){
@@ -41,7 +43,7 @@ button:disabled{opacity:.6;cursor:wait}
     .then(function(r){return r.json()}).then(function(j){
       if(j.ok) show('ok','Sent. TikTok accepted the test purchase.\nEvent id: '+j.event_id+'\nNow check Events Manager > Test events.');
       else show('err','TikTok did not accept it.\n'+(j.error||JSON.stringify(j.tiktok)));
-    }).catch(function(e){show('err','Could not reach the server: '+e)}).then(function(){go.disabled=false;go.textContent='Send test purchase to TikTok'});
+    }).catch(function(e){show('err','Could not reach the server: '+e)}).then(function(){go.disabled=false;label()});
   });
 })();
 </script></body></html>
