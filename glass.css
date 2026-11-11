@@ -795,3 +795,6 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 .pp-xmount{min-height:0}
 .pp-or{display:flex;align-items:center;gap:12px;margin:16px 0 4px;color:var(--mute);font-size:13px}
 .pp-or:before,.pp-or:after{content:"";flex:1;height:1px;background:#e5e7eb}
+
+.pp-wallet{display:block;width:100%;padding:16px;margin-top:4px;font:700 16px Inter,system-ui,sans-serif;color:#fff;background:#000;border:0;border-radius:12px;cursor:pointer}
+.pp-wallet:disabled{opacity:.6;cursor:wait}
