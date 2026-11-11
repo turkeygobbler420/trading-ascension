@@ -789,3 +789,9 @@ h1,h1 .accent{font-weight:600!important;letter-spacing:-.025em}
 .pp-inc li{padding-left:22px;position:relative;line-height:1.4}
 .pp-inc li:before{content:"✓";position:absolute;left:0;color:var(--p1);font-weight:700}
 .pp-inc li span{color:var(--mute)}
+
+/* Apple Pay / Google Pay row on the checkout page */
+.pp-express{margin-bottom:6px}
+.pp-xmount{min-height:0}
+.pp-or{display:flex;align-items:center;gap:12px;margin:16px 0 4px;color:var(--mute);font-size:13px}
+.pp-or:before,.pp-or:after{content:"";flex:1;height:1px;background:#e5e7eb}

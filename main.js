@@ -238,7 +238,7 @@
   var payPage = null, payHandle = null;
   var closePayPage = function () {
     if (!payPage) return;
-    try { payHandle && payHandle.destroy && payHandle.destroy(); } catch (_) {}
+    (Array.isArray(payHandle) ? payHandle : [payHandle]).forEach(function (h) { try { h && h.destroy && h.destroy(); } catch (_) {} });
     payHandle = null; payPage.remove(); payPage = null;
     document.body.style.overflow = ''; document.body.classList.remove('pay-open');
     if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (_) {}
@@ -254,6 +254,7 @@
         '<div class="pp-head"><h1>' + esc(c.plan) + '</h1><div class="pp-price">' + money(c.amount) + '</div></div>' +
         '<p class="pp-for">Once-off payment · access sent to ' + esc(c.email) + '</p>' +
         (items ? '<div class="pp-inc"><p>What you get</p><ul>' + items + '</ul></div>' : '') +
+        '<div class="pp-express" hidden><div class="pp-xmount"></div><div class="pp-or"><span>or pay by card</span></div></div>' +
         '<div class="pp-mount"><div class="pp-load">Loading checkout…</div></div>' +
         '<p class="pp-fine">Secure payment processed by Whop.</p>' +
       '</main>' +
@@ -271,8 +272,14 @@
       var mo = new MutationObserver(function () { var f = holder.querySelector('iframe'); if (f) { mo.disconnect(); f.addEventListener('load', ready); setTimeout(ready, 2500); } });
       mo.observe(holder, { childList: true, subtree: true });
     }
+    var xbox = el.querySelector('.pp-express'), xmount = el.querySelector('.pp-xmount');
+    if (window.MutationObserver) {   // reveal the Apple Pay / Google Pay row only if Whop actually draws a button (needs a device that supports a wallet)
+      new MutationObserver(function () { var f = xmount.querySelector('iframe'); if (f && xmount.offsetHeight > 20) xbox.hidden = false; }).observe(xmount, { childList: true, subtree: true, attributes: true });
+      xmount.addEventListener('load', function () { setTimeout(function () { if (xmount.querySelector('iframe') && xmount.offsetHeight > 20) xbox.hidden = false; }, 600); }, true);
+    }
     return {
       mount: holder,
+      xmount: xmount,
       setHandle: function (h) { payHandle = h; },
       ready: ready,
       success: function () { var d = el.querySelector('.pp-done'); d.hidden = false; requestAnimationFrame(function () { d.classList.add('in'); }); el.querySelector('.pp-body').setAttribute('aria-hidden', 'true'); }
@@ -369,8 +376,16 @@
           onReady: function () { pg.ready(); },
           onComplete: function (r) { if (r && r.result === 'payment') pg.success(); }
         });
-        pg.setHandle(c);
+        // Apple Pay / Google Pay big buttons (Whop only draws them when the device and domain support a wallet)
+        var x = window.WhopElements().checkout.create({
+          plan: WHOP[key(lead.plan)],
+          metadata: { lead_ref: ref },
+          returnUrl: 'https://tradingascension.co.za/?checkout=return&ref=' + encodeURIComponent(ref),
+          onComplete: function (r) { if (r && r.result === 'payment') pg.success(); }
+        });
+        pg.setHandle([c, x]);
         c.create('checkout').mount(pg.mount);
+        try { x.create('expressCheckout', { wallets: { applePay: 'auto', googlePay: 'auto', payPal: 'never' }, layout: 'vertical', onError: function () {} }).mount(pg.xmount); } catch (_) {}
       }).catch(function () { window.location.href = url; });
     } else { form.hidden = true; done.hidden = false; }
   });
