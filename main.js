@@ -188,7 +188,7 @@
     document.body.style.overflow = '';
     if (e.persisted && modal.classList.contains('open')) closeModal();
   });
-  var EMBED = true;    // true = take payment inside the popup (Whop embedded checkout)
+  var EMBED = false;   // true = take payment inside the popup (Whop embedded checkout)
   var current = {};
   var loadWhop = function () {
     return new Promise(function (res, rej) {
