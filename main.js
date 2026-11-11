@@ -190,6 +190,21 @@
   });
   var EMBED = false;   // true = take payment inside the popup (Whop embedded checkout)
   var current = {};
+  var uuid = function () { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 12); };
+  var pre = null;   // Whop checkout link requested the moment the form opens, so the redirect after submit is instant
+  var prefetchLink = function (plan) {
+    var p = { plan: plan, ref: uuid(), t: Date.now() };
+    var ctl = window.AbortController ? new AbortController() : null;
+    var to = setTimeout(function () { if (ctl) ctl.abort(); }, 5000);
+    p.promise = fetch(SUPABASE_URL + '/functions/v1/create-checkout', {
+      method: 'POST', signal: ctl ? ctl.signal : undefined,
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_KEY },
+      body: JSON.stringify({ lead_ref: p.ref, plan: plan })
+    }).then(function (r) { clearTimeout(to); return r.ok ? r.json() : null; })
+      .then(function (j) { return j && /^https:\/\/whop\.com\//.test(j.url || '') ? j.url : null; })
+      .catch(function () { return null; });
+    return p;
+  };
   var loadWhop = function () {
     return new Promise(function (res, rej) {
       if (window.WhopElements) return res();
@@ -209,6 +224,7 @@
     planField.textContent = plan;
     resetPay();
     form.hidden = false; done.hidden = true; form.reset();
+    pre = current.amount ? prefetchLink(plan) : null;
     var lp = document.getElementById('lead-pay'); if (lp) { lp.hidden = true; lp.innerHTML = ''; }
     modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -331,7 +347,8 @@
     document.getElementById('lead-name').textContent = name.split(' ')[0];
     var url = current.amount ? whopUrl(lead.plan) : '';
     // lead_ref ties this exact form submission to the Whop payment (sent to Whop as checkout metadata)
-    var ref = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+    var usePre = !!(pre && pre.plan === lead.plan && Date.now() - pre.t < 10 * 60 * 1000);
+    var ref = usePre ? pre.ref : uuid();
     var saved = saveLead(Object.assign({
       name: name, email: email, country_code: f.cc.value, whatsapp: phone, plan: lead.plan, lead_ref: ref,
       amount_zar: current.amount ? current.amount / 100 : null, page_url: location.href, status: url ? 'checkout_started' : 'new'
@@ -349,7 +366,7 @@
       document.body.appendChild(wait);
       // Ask our server for a Whop link that carries this lead's reference (so the payment matches exactly,
       // and no personal data is in the URL). If that is unavailable, fall back to the pre-filled link above.
-      saved.then(function () {
+            var slow = function () { return saved.then(function () {
         var ctl = window.AbortController ? new AbortController() : null;
         var t = setTimeout(function () { if (ctl) ctl.abort(); }, 4000);
         return fetch(SUPABASE_URL + '/functions/v1/create-checkout', {
@@ -358,7 +375,10 @@
           body: JSON.stringify({ lead_ref: ref })
         }).then(function (r) { clearTimeout(t); return r.ok ? r.json() : null; })
           .then(function (j) { return j && /^https:\/\/whop\.com\//.test(j.url || '') ? j.url : go; });
-      }).catch(function () { return go; }).then(function (dest) { window.location.href = dest; });
+      }); };
+      // Fast path: link was requested when the form opened; only wait (briefly) for the lead save, then go.
+      var linkReady = usePre ? Promise.all([pre.promise, Promise.race([saved, new Promise(function (r) { setTimeout(r, 800); })])]).then(function (r) { return r[0] ? r[0] + '?email=' + encodeURIComponent(email) + '&name=' + encodeURIComponent(name) : slow(); }) : slow();
+      linkReady.catch(function () { return go; }).then(function (dest) { window.location.href = dest; });
     } else if (url) {
       // Step 2: our own full-screen checkout page, with Whop's secure payment form embedded in it.
       // The payment carries our lead_ref so it matches this exact lead.
