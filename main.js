@@ -426,17 +426,15 @@
     v.autoplay = false; v.loop = false; v.muted = false; v.defaultMuted = false; v.playsInline = true;
     if (!v.paused) v.pause();
     box.classList.add('tp', 'tp-idle');
-    // chapters (seconds, title): the script sections of final_jali_vsl_v5 (2:37), each starting ~0.1 s before
-    // its first spoken word (word times from a transcript of this file, cross-checked with the edit timeline)
+    // chapters (seconds, title): script sections of the 1:06 VSL, each starting ~0.1 s before its first spoken word
     var CH = [
-      [0, 'Why most beginners stall'],        // hook: "Have you ever wanted to learn to trade?"
-      [10.1, 'What beginners are missing'],   // problem: "The problem is…" (10.20)
-      [17.0, 'The Trading Ascension Model'],  // solution: "That's exactly why we created…" (17.08)
-      [36.9, 'Meet Jali'],                    // story: "I'm Jali, the founder…" (36.98)
-      [53.2, 'Helping SA traders'],           // "Over the past three years I've helped thousands of South Africans…" (53.26)
-      [76.5, 'Student success stories'],      // proof: "And it's not just about my own journey." (76.58)
-      [102.4, 'What you get inside'],         // offer: "So here's what you actually get…" (102.52)
-      [139.9, 'Join Trading Ascension']       // cta: "If you've been wanting to learn how to trade…" (140.00)
+      [0, 'Why most beginners stall'],        // hook: "Have you ever wanted to learn how to trade?"
+      [8.6, 'What beginners are missing'],    // problem: "That's because most beginners lack…" (8.68)
+      [14.6, 'The Trading Ascension Model'],  // solution: "That's exactly why we created…" (14.68)
+      [27.3, 'What you will learn'],          // "You'll learn how to trade gold, forex and indices…" (27.42)
+      [39.0, 'Live classes and community'],   // "You'll also get twice weekly live classes…" (39.12)
+      [49.1, 'Helping SA traders'],           // "Over the last three years, we've helped thousands…" (49.18)
+      [56.5, 'Join Trading Ascension']        // cta: "So, stop jumping between strategies…" (56.66)
     ];
     var I = {
       play: '<svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
@@ -448,7 +446,7 @@
       replay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></svg>'
     };
     var fmt = function (s) { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); };
-    var dur = function () { return isFinite(v.duration) && v.duration > 0 ? v.duration : 156.7; };
+    var dur = function () { return isFinite(v.duration) && v.duration > 0 ? v.duration : 66.3; };
     var chAt = function (t) { var c = CH[0]; CH.forEach(function (x) { if (t >= x[0] - 0.05) c = x; }); return c; };
     var dots = CH.map(function (c, i) {
       return '<button class="tp-ch" type="button" data-t="' + c[0] + '" aria-label="Chapter ' + (i + 1) + ': ' + c[1] + '"></button>';
