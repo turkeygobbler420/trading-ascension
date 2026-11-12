@@ -429,12 +429,12 @@
     // chapters (seconds, title): script sections of the 1:06 VSL, each starting ~0.1 s before its first spoken word
     var CH = [
       [0, 'Why most beginners stall'],        // hook: "Have you ever wanted to learn how to trade?"
-      [8.6, 'What beginners are missing'],    // problem: "That's because most beginners lack…" (8.68)
-      [14.6, 'The Trading Ascension Model'],  // solution: "That's exactly why we created…" (14.68)
-      [27.3, 'What you will learn'],          // "You'll learn how to trade gold, forex and indices…" (27.42)
-      [39.0, 'Live classes and community'],   // "You'll also get twice weekly live classes…" (39.12)
-      [49.1, 'Helping SA traders'],           // "Over the last three years, we've helped thousands…" (49.18)
-      [56.5, 'Join Trading Ascension']        // cta: "So, stop jumping between strategies…" (56.66)
+      [8.48, 'What beginners are missing'],    // problem: "That's because most beginners lack…" (8.68)
+      [14.58, 'The Trading Ascension Model'],  // solution: "That's exactly why we created…" (14.68)
+      [27.58, 'What you will learn'],          // "You'll learn how to trade gold, forex and indices…" (27.42)
+      [38.88, 'Live classes and community'],   // "You'll also get twice weekly live classes…" (39.12)
+      [49.08, 'Helping SA traders'],           // "Over the last three years, we've helped thousands…" (49.18)
+      [56.38, 'Join Trading Ascension']        // cta: "So, stop jumping between strategies…" (56.66)
     ];
     var I = {
       play: '<svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
